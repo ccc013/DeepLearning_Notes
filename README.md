@@ -79,6 +79,7 @@
 - [CS230 深度学习速查表](https://github.com/afshinea/stanford-cs-230-deep-learning)
 - [deeplearning.ai（吴恩达老师的深度学习课程笔记及资源）](https://github.com/fengdu78/deeplearning_ai_books)，[吴恩达老师的机器学习课程个人笔记](https://github.com/fengdu78/Coursera-ML-AndrewNg-Notes)--同一个作者对吴恩达老师两门课程的笔记和资源
 - [Deep Tutorials for PyTorch](https://github.com/sgrvinod/Deep-Tutorials-for-PyTorch)--一系列基于 Pytorch 的教程，目前包括 caption、sequence labeling、object detection 和 Text Classification, 复现对应领域的某篇论文的代码
+- [零基础入门深度学习(1) - 感知器](https://zybuluo.com/hanbingtao/note/433855)--总共七章内容，从感知器、CNN到RNN、LSTM
 
 
 
@@ -122,7 +123,7 @@ https://github.com/fengdu78/lihang-code--python3.6版本
 
 #### 国内
 
-- (**推荐**)[机器之心](https://www.jiqizhixin.com/)--
+- (**推荐**)[机器之心](https://www.jiqizhixin.com/)
 - [PaperWeekly](https://www.paperweekly.site/tags/176/papers)
 - [通天塔](http://tongtianta.site/)--论文阅读，中英文翻译对比
 
