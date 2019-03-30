@@ -4,19 +4,22 @@
 
 目录
 
-- 学习笔记
-- 参考学习资料
-  - 综合资源
-  - 网上教程
-  - 视频课程
-  - 书籍
-  - 网站
-  - 论文
-  - 项目 & Github
-  - 博客
-  - 比赛
-  - 数据集
-  - 面试资料
+- [学习笔记](https://github.com/ccc013/DeepLearning_Notes#%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0)
+  - [初学者的入门教程](https://github.com/ccc013/DeepLearning_Notes#%E5%88%9D%E5%AD%A6%E8%80%85%E7%9A%84%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B)
+  - [机器学习入门系列笔记](https://github.com/ccc013/DeepLearning_Notes#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%97%E7%AC%94%E8%AE%B0)
+  - [深度学习](https://github.com/ccc013/DeepLearning_Notes#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0)
+- [参考学习资料](https://github.com/ccc013/DeepLearning_Notes#%E5%8F%82%E8%80%83%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99)
+  - [综合资源](https://github.com/ccc013/DeepLearning_Notes#%E7%BB%BC%E5%90%88%E8%B5%84%E6%BA%90)
+  - [网上教程](https://github.com/ccc013/DeepLearning_Notes#%E7%BD%91%E4%B8%8A%E6%95%99%E7%A8%8B)
+  - [视频课程](https://github.com/ccc013/DeepLearning_Notes#%E8%A7%86%E9%A2%91%E8%AF%BE%E7%A8%8B)
+  - [书籍](https://github.com/ccc013/DeepLearning_Notes#%E4%B9%A6%E7%B1%8D)
+  - [网站](https://github.com/ccc013/DeepLearning_Notes#%E7%BD%91%E7%AB%99)
+  - [论文](https://github.com/ccc013/DeepLearning_Notes#%E8%AE%BA%E6%96%87)
+  - [项目 & Github](https://github.com/ccc013/DeepLearning_Notes#%E9%A1%B9%E7%9B%AE--github)
+  - [博客](https://github.com/ccc013/DeepLearning_Notes#%E5%8D%9A%E5%AE%A2)
+  - [比赛](https://github.com/ccc013/DeepLearning_Notes#%E6%AF%94%E8%B5%9B)
+  - [数据集](https://github.com/ccc013/DeepLearning_Notes#%E6%95%B0%E6%8D%AE%E9%9B%86)
+  - [面试资料](https://github.com/ccc013/DeepLearning_Notes#%E9%9D%A2%E8%AF%95%E8%B5%84%E6%96%99)
 
 ## 学习笔记
 
