@@ -120,14 +120,19 @@
 
 - [Deep Tutorials for PyTorch](https://github.com/sgrvinod/Deep-Tutorials-for-PyTorch)--一系列基于 Pytorch 的教程，目前包括 caption、sequence labeling、object detection 和 Text Classification, 复现对应领域的某篇论文的代码
 
+#### Kearas
+
+
+
 #### 人脸
 
 - [face-alignment-with-opencv-and-python](https://www.pyimagesearch.com/2017/05/22/face-alignment-with-opencv-and-python/)--人脸对齐
 - [facial-landmarks-dlib-opencv-python](https://www.pyimagesearch.com/2017/04/03/facial-landmarks-dlib-opencv-python/)--利用 dlib 进行人脸关键点检测
 - [Implementing Face Detection using Python and OpenCV](https://medium.com/analytics-vidhya/how-to-build-a-face-detection-model-in-python-8dc9cecadfe9)--利用 opencv 实现人脸检测
 
-
 ### 视频课程
+
+- [Deep Learning, Reinforcement Learning, Machine Learning, Computer Vision, and NLP lectures](https://github.com/kmario23/deep-learning-drizzle)--深度学习、强化学习、机器学习、计算机视觉、NLP方面的课程
 
 #### 机器学习
 
@@ -149,6 +154,12 @@
 - [CS231n课程](https://link.zhihu.com/?target=http%3A//cs231n.stanford.edu/)
 - Andrew Ng 的 deeplearning.ai   [Coursera](http://www.coursera.org/specializations/deep-learning) [网易云课堂](http://link.zhihu.com/?target=http%3A//mooc.study.163.com/smartSpec/detail/1001319001.htm)
 
+
+
+#### 数学
+
+
+
 ### 书籍
 
 #### 机器学习
@@ -167,7 +178,8 @@ https://github.com/fengdu78/lihang-code
 - 《机器学习实战》
 - 《hands-on-ml-with-sklearn-and-tf》[[电子书]](http://download.csdn.net/download/xinconan1992/9877225)[[中文版翻译]](https://github.com/apachecn/hands_on_Ml_with_Sklearn_and_TF)[[Code]](https://github.com/ageron/handson-ml)
 - 《百面机器学习》
-- 
+
+
 
 #### 深度学习
 
@@ -262,6 +274,7 @@ ECCV 2018 accepted paper：http://openaccess.thecvf.com/ECCV2018.py
 - [deep-learning-papers-translation](https://github.com/SnailTyan/deep-learning-papers-translation)--Github 深度学习论文翻译，包括分类论文，检测论文等
 - [deep-learning-papers](https://github.com/sbrugman/deep-learning-papers)--深度学习的论文，包括视觉、文本、音频，最新更新是2017年10月
 - [各种机器学习任务的顶级结果（论文）汇总](https://github.com/RedditSota/state-of-the-art-result-for-machine-learning-problems)--汇总多个任务，包括视觉、语音、NLP、强化学习等方向的最顶级结果的论文
+- CV 领域常见单词 [[一]](https://zhuanlan.zhihu.com/p/58860096) [[二]](https://zhuanlan.zhihu.com/p/60049093)
 
 ### 项目 & Github
 
