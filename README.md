@@ -174,7 +174,12 @@ https://blog.csdn.net/tudaodiaozhale
 
 https://github.com/fengdu78/lihang-code
 
+https://github.com/SmirkCao/Lihang
+
 - 《机器学习》--周志华
+
+南瓜书： https://github.com/datawhalechina/pumpkin-book 对书中公式的补充推导
+
 - 《机器学习实战》
 - 《hands-on-ml-with-sklearn-and-tf》[[电子书]](http://download.csdn.net/download/xinconan1992/9877225)[[中文版翻译]](https://github.com/apachecn/hands_on_Ml_with_Sklearn_and_TF)[[Code]](https://github.com/ageron/handson-ml)
 - 《百面机器学习》
