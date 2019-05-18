@@ -55,3 +55,4 @@ print('tensor3= ', tensor3)
 # 可以用类似 numpy 的索引操作来访问 tensor 的某一维, 比如访问 tensor3 第一列数据
 print(tensor3[:, 0])
 
+# 修改 tensor 大小，torch.view()

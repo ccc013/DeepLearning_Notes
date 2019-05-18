@@ -142,7 +142,7 @@
 - [给程序员的实践深度学习课程](https://course.fast.ai/)[[介绍]](https://mp.weixin.qq.com/s/aGhdgUQaO7eJylwThU65kQ)--整个课程一共7节，带你从理论到应用学成深度学习，计算机视觉、NLP、推荐系统等等一课打尽。并且非常偏向于实践，深受好评！
 - 林轩田老师的两门课程
 
-机器学习基石 [[课程主页]](https://www.csie.ntu.edu.tw/~htlin/) [[b站视频]](https://www.bilibili.com/video/av12463015/) [配套书籍：Learning From Data](http://amlbook.com/)
+机器学习基石 [[课程主页]](https://www.csie.ntu.edu.tw/~htlin/) [[b站视频]](https://www.bilibili.com/video/av36731342) [配套书籍：Learning From Data](http://amlbook.com/) [笔记和习题](https://github.com/Doraemonzzz/Learning-from-data)
 
 机器学习技法 [[b站视频]](https://www.bilibili.com/video/av36760800/)
 
