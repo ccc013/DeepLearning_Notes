@@ -23,7 +23,7 @@
 
 ## 学习笔记
 
-#### 初学者的入门教程
+### 初学者的入门教程
 
 1. [machine-learning-in-python](<https://www.pyimagesearch.com/2019/01/14/machine-learning-in-python/>) --[Adrian Rosebrock](https://www.pyimagesearch.com/author/adrian/)
 
@@ -33,7 +33,7 @@
 
 
 
-#### 机器学习入门系列笔记
+### 机器学习入门系列笔记
 
 - [机器学习入门系列（1）--机器学习概览](https://mp.weixin.qq.com/s/r_UkF_Eys4dTKMH7DNJyTA)
 - [机器学习入门系列(2)--如何构建一个完整的机器学习项目(一)](https://mp.weixin.qq.com/s/nMG5Z3CPdwhg4XQuMbNqbw)
@@ -49,9 +49,9 @@
 - [模型评估、过拟合欠拟合以及超参数调优方法](https://mp.weixin.qq.com/s/1NxVNtKNsZFWYI62KzL1GA)
 - [初学者的机器学习入门实战教程！](https://mp.weixin.qq.com/s/HoFiD0ItcO5_pVMspni_xw)
 
-#### 深度学习
+### 深度学习
 
-##### GAN 学习系列
+#### GAN 学习系列
 
 -  [[GAN学习系列1]初识GAN](https://mp.weixin.qq.com/s?__biz=MzU5MDY5OTI5MA==&mid=2247483711&idx=1&sn=ead88d5b21e08d9df853b72f31d4b5f4&chksm=fe3b0f4ac94c865cfc243123eb4815539ef2d5babdc8346f79a29b681e55eee5f964bdc61d71&token=1760252914&lang=zh_CN#rd)
 -  [[GAN学习系列2] GAN的起源](https://mp.weixin.qq.com/s?__biz=MzU5MDY5OTI5MA==&mid=2247483732&idx=1&sn=99cb91edf6fb6da3c7d62132c40b0f62&chksm=fe3b0f21c94c8637a8335998c3fc9d0adf1ac7dea332c2bd45e63707eac6acad8d84c1b3d16d&token=985117826&lang=zh_CN#rd)
@@ -62,36 +62,51 @@
 
 ------
 
-## 参考学习资料
+# 参考学习资料
 
-### 综合资源
+## 综合资源
 
+1. [深度学习入门教程&&优秀文章&&Deep Learning Tutorial](https://github.com/Mikoto10032/DeepLearning)--非常全面完整的深度学习资料，包括教程、发展史、文章、项目等
 1. [Awesome Computer Vision](https://github.com/jbhuang0604/awesome-computer-vision)--Github 上的一个9000+星的资源，包含书籍、课程、教程、论文、数据集、博客等等
-2. [资源汇总 | 200多个最好的机器学习、NLP和Python相关教程](http://mp.weixin.qq.com/s?__biz=MzI0NDUwNzYzMg==&mid=2247483951&idx=1&sn=7a83632562662e520407627196c2ba65&chksm=e95df4b0de2a7da6958c89d1a3dbe43bc4165fab2ecdcc4992a666091bb1676e0e3fe570d822&mpshare=1&scene=1&srcid=#rd)
-3. [AI算法工程师手册](http://www.huaxiaozhuan.com/)--包含数学基础、机器学习、深度学习、计算机视觉和NLP等知识
-4. [StateOfTheArt.ai ](https://www.stateoftheart.ai/)--AI 界的 State of the Art都在这里了
-5. [awesome-fashion-ai](https://github.com/ayushidalmia/awesome-fashion-ai/blob/master/README.md)--有关 fashion 和 e-commerce 方面的研究论文、数据集等
-6. [AlphaTree-graphic-deep-neural-network](https://github.com/weslynn/AlphaTree-graphic-deep-neural-network)--介绍了深度学习的一些模型，并且有图示，包含了图像分类、物体检测、人脸检测与识别等方向
-7. [AiLearning: 机器学习 - MachineLearning - ML、深度学习 - DeepLearning - DL、自然语言处理 NLP](https://github.com/apachecn/AiLearning)
-8. [A complete ML study path, focused on TensorFlow and Scikit-Learn](https://github.com/clone95/Machine-Learning-Study-Path-March-2019/tree/master/Career%20Paths/Machine%20Learning%20Engineer%20Career%20Path)--机器学习的学习路线
+1. [资源汇总 | 200多个最好的机器学习、NLP和Python相关教程](http://mp.weixin.qq.com/s?__biz=MzI0NDUwNzYzMg==&mid=2247483951&idx=1&sn=7a83632562662e520407627196c2ba65&chksm=e95df4b0de2a7da6958c89d1a3dbe43bc4165fab2ecdcc4992a666091bb1676e0e3fe570d822&mpshare=1&scene=1&srcid=#rd)
+1. [AI算法工程师手册](http://www.huaxiaozhuan.com/)--包含数学基础、机器学习、深度学习、计算机视觉和NLP等知识
+1. [StateOfTheArt.ai ](https://www.stateoftheart.ai/)--AI 界的 State of the Art都在这里了
+1. [awesome-fashion-ai](https://github.com/ayushidalmia/awesome-fashion-ai/blob/master/README.md)--有关 fashion 和 e-commerce 方面的研究论文、数据集等
+1. [AlphaTree-graphic-deep-neural-network](https://github.com/weslynn/AlphaTree-graphic-deep-neural-network)--介绍了深度学习的一些模型，并且有图示，包含了图像分类、物体检测、人脸检测与识别等方向
+1. [AiLearning: 机器学习 - MachineLearning - ML、深度学习 - DeepLearning - DL、自然语言处理 NLP](https://github.com/apachecn/AiLearning)
+1. [A complete ML study path, focused on TensorFlow and Scikit-Learn](https://github.com/clone95/Machine-Learning-Study-Path-March-2019/tree/master/Career%20Paths/Machine%20Learning%20Engineer%20Career%20Path)--机器学习的学习路线
+1. [Awesome-nlp](https://github.com/keon/awesome-nlp):nlp 相关的资源、教程等
+1. [深度学习网络模型大全（基于TensorFlow和PyTorch实现）](https://github.com/rasbt/deeplearning-models)
+1. [深度学习工程师生存指南](https://github.com/ypwhs/dl-engineer-guidebook)--讲述一个深度学习工程师所需的所有东西，配置选择工作站、本地电脑、Python库，Linux常用命令、常用数据集、网络模型等 
+1. [十个最常用深度学习图像/视频数据标注工具](https://mp.weixin.qq.com/s/sau9FGSMm8dzYgG658_t5w)
+1. [keras pytorch 构建模型对比](https://blog.csdn.net/normol/article/details/88092454)
+1. [卷积核可视化网站](https://ezyang.github.io/convolution-visualizer/index.html)
+1. [Shift-AI-models-to-real-world-products](https://github.com/lonelygo/Shift-AI-models-to-real-world-products)--AI模型落地的建议
+1. [计算机视觉领域资源汇总(Awesome-CV-Resources)](https://github.com/Sophia-11/Awesome-CV-Resources)
 
-### 网上教程
+------
 
-#### 机器学习
+## 网上教程
+
+### 机器学习
 
 - [机器学习100天](https://github.com/Avik-Jain/100-Days-Of-ML-Code)[[中文翻译]](https://github.com/MLEveryday/100-Days-Of-ML-Code)
 - [Machine Learning in Python](https://www.pyimagesearch.com/2019/01/14/machine-learning-in-python/)--手把手教你利用Python对图像数据进行机器学习（使用scikit-learn
-  和Keras）：Machine Learning in Python
-  注：含KNN、朴素贝叶斯、Logistic回归、SVM、决策树、随机森林、神经网络和深度神经网络和CNN等算法
+
+和Keras）：Machine Learning in Python
+
+注：含KNN、朴素贝叶斯、Logistic回归、SVM、决策树、随机森林、神经网络和深度神经网络和CNN等算法
 - [CS229 机器学习速查表](https://github.com/afshinea/stanford-cs-229-machine-learning)
 - [机器学习笔记](https://feisky.xyz/machine-learning/)--机器学习与人工智能学习笔记，包括机器学习、深度学习以及常用开源框架（Tensorflow、PyTorch）等
+- [图像处理100问](https://github.com/gzr2017/ImageProcessing100Wen)
+- [B站最火数学视频3Blue1Brown是如何制作的](https://mp.weixin.qq.com/s/M3DS1VOLMaUBlhhVbFbaTg)，知乎链接：[https://www.zhihu.com/question/57357012/answer/723888621](https://www.zhihu.com/question/57357012/answer/723888621)
+- 机器学习应用软件工程最佳实践大列表：[https://github.com/SE-ML/awesome-seml](https://github.com/SE-ML/awesome-seml)
 
-#### 深度学习
+### 深度学习
 
 - [deep_learning_cookbook](https://github.com/DOsinga/deep_learning_cookbook)--基于TensorFlow和Keras的深度学习书籍《Deep Learning Cookbook》,代码很详细，包含多个项目！
 - [深度学习教程整理 | 干货](https://github.com/zeusees/HyperDL-Tutorial?from=singlemessage&isappinstalled=0)--整理深度学习方面的教程，包括基础网络、框架总结、网络设计和转换等
 - [CS230 深度学习速查表](https://github.com/afshinea/stanford-cs-230-deep-learning)
-- [deeplearning.ai（吴恩达老师的深度学习课程笔记及资源）](https://github.com/fengdu78/deeplearning_ai_books)，[吴恩达老师的机器学习课程个人笔记](https://github.com/fengdu78/Coursera-ML-AndrewNg-Notes)--同一个作者对吴恩达老师两门课程的笔记和资源
 - [零基础入门深度学习(1) - 感知器](https://zybuluo.com/hanbingtao/note/433855)--总共七章内容，从感知器、CNN到RNN、LSTM
 
 
@@ -101,7 +116,10 @@
 
   论文：https://arxiv.org/pdf/1803.08834.pd
 
+#### 图神经网络
 
+- [图卷积神经网络资源](https://github.com/Jiakui/awesome-gcn)
+- [一文带你入门目前大热的图神经网络](https://mp.weixin.qq.com/s/mzNW9tyOoB6p5oXJJuKmag)
 
 #### RNN & LSTM
 
@@ -110,6 +128,21 @@
 - [完全图解RNN、RNN变体、Seq2Seq、Attention机制](https://www.leiphone.com/news/201709/8tDpwklrKubaecTa.html)
 - [人人都能看懂的LSTM](https://zhuanlan.zhihu.com/p/32085405)
 - [Understanding LSTM Networks](http://colah.github.io/posts/2015-08-Understanding-LSTMs/)--参考这篇文章翻译，[LSTM入门总结](https://zhuanlan.zhihu.com/p/38063427)
+- [自然语言处理：从基础到RNN和LSTM](https://medium.com/artificial-intelligence-network/top-ai-trends-of-2019-727c263b7ac2) 
+- [【Deep Learning】通俗大白话详述RNN理论和LSTM理论](https://mp.weixin.qq.com/s/3Rpq1EvYi-_9wvJ5fUB5dQ)
+- [从零开始用 Python 构建循环神经网络](https://mp.weixin.qq.com/s/4cTaKAt0P5XL4mo0vupV7w)
+
+#### Attention
+
+- [基於Attention之NLP paper - Attention Is All You Need](https://xiaosean.github.io/deep%20learning/nlp/2018-07-13-Attention-is-all-u-need/)
+- [遍地开花的 Attention ，你真的懂吗？](https://mp.weixin.qq.com/s/i3Xd_IB7R0-QPztn-pgpng)
+
+#### 人脸
+
+- [face-alignment-with-opencv-and-python](https://www.pyimagesearch.com/2017/05/22/face-alignment-with-opencv-and-python/)--人脸对齐
+- [facial-landmarks-dlib-opencv-python](https://www.pyimagesearch.com/2017/04/03/facial-landmarks-dlib-opencv-python/)--利用 dlib 进行人脸关键点检测
+- [Implementing Face Detection using Python and OpenCV](https://medium.com/analytics-vidhya/how-to-build-a-face-detection-model-in-python-8dc9cecadfe9)--利用 opencv 实现人脸检测
+
 
 #### TensorFlow
 
@@ -122,19 +155,34 @@
 
 #### Kearas
 
+### 特征工程
 
+- [Feature Engineering & Feature Selection](https://github.com/Yimeng-Zhang/feature-engineering-and-feature-selection) : 特征工程和特征选择的介绍和代码实现
 
-#### 人脸
+介绍的文章 [https://mp.weixin.qq.com/s/dMuTcHNIyb5cpneZhdLE_Q](https://mp.weixin.qq.com/s/dMuTcHNIyb5cpneZhdLE_Q)
 
-- [face-alignment-with-opencv-and-python](https://www.pyimagesearch.com/2017/05/22/face-alignment-with-opencv-and-python/)--人脸对齐
-- [facial-landmarks-dlib-opencv-python](https://www.pyimagesearch.com/2017/04/03/facial-landmarks-dlib-opencv-python/)--利用 dlib 进行人脸关键点检测
-- [Implementing Face Detection using Python and OpenCV](https://medium.com/analytics-vidhya/how-to-build-a-face-detection-model-in-python-8dc9cecadfe9)--利用 opencv 实现人脸检测
+- [面向机器学习的特征工程](http://fe4ml.apachecn.org/#/)：[github](https://github.com/apachecn/fe4ml-zh)
 
-### 视频课程
+### 模型压缩
+
+- [model-compression](https://github.com/666DZY666/model-compression)：基于pytorch实现模型压缩（1、量化：8/4/2 bits(dorefa)、三值/二值(twn/bnn/xnor-net)；2、剪枝：正常、规整、针对分组卷积结构的通道剪枝；3、分组卷积结构；4、针对特征A二值的BN融合）
+
+### Docker
+
+- [Docker，救你于「深度学习环境配置」的苦海](https://mp.weixin.qq.com/s/2bVuYYq4Dx3eM8Wz7tma4g)
+- [【杂谈】您想要的docker环境来了！](https://mp.weixin.qq.com/s/Ex1AOKGlp2ag6CQTc3rSkA)
+
+### 环境配置
+
+- [【杂谈】手把手带你配置深度学习环境](https://mp.weixin.qq.com/s/U0ONnP0NzhE9Zx9_7010Hw)
+
+------
+
+## 视频课程
 
 - [Deep Learning, Reinforcement Learning, Machine Learning, Computer Vision, and NLP lectures](https://github.com/kmario23/deep-learning-drizzle)--深度学习、强化学习、机器学习、计算机视觉、NLP方面的课程
 
-#### 机器学习
+### 机器学习
 
 - 吴恩达老师的课程 [[Couresa]](https://www.coursera.org/learn/machine-learning) [[网易云]](http://open.163.com/special/opencourse/machinelearning.html)
 - 李宏毅老师的 2019 机器学习课程 [[youtube]](https://www.youtube.com/playlist?list=PLJV_el3uVTsOK_ZK5L0Iv_EQoL1JefRL4)[[B站]](https://www.bilibili.com/video/av46561029/) [[课程资料链]](http://speech.ee.ntu.edu.tw/~tlkagk/courses_ML19.html)
@@ -147,22 +195,25 @@
 机器学习技法 [[b站视频]](https://www.bilibili.com/video/av36760800/)
 
 
-
-#### 深度学习
+### 深度学习
 
 - [李宏毅老师的深度学习课程](https:www.bilibili.com/video/av9770302)
 - [CS231n课程](https://link.zhihu.com/?target=http%3A//cs231n.stanford.edu/)
-- Andrew Ng 的 deeplearning.ai   [Coursera](http://www.coursera.org/specializations/deep-learning) [网易云课堂](http://link.zhihu.com/?target=http%3A//mooc.study.163.com/smartSpec/detail/1001319001.htm)
+- Andrew Ng 的 deeplearning.ai   [Coursera](http://www.coursera.org/specializations/deep-learning) [网易云课堂](http://link.zhihu.com/?target=http%3A//mooc.study.163.com/smartSpec/detail/1001319001.htm)，[deeplearning.ai课程笔记及资源](https://github.com/fengdu78/deeplearning_ai_books)
+- [fast.ai](https://course.fast.ai/)--深度学习实战课程
 
 
 
-#### 数学
+
+### 数学
 
 
 
-### 书籍
+------
 
-#### 机器学习
+## 书籍
+
+### 机器学习
 
 - 《统计学习方法》
 
@@ -187,35 +238,40 @@ https://github.com/SmirkCao/Lihang
 
 
 
-#### 深度学习
+### 深度学习
 
 - 《深度学习》
-- 《动手学深度学习》[[pdf]](https://zh.gluon.ai/gluon_tutorials_zh.pdf)[[Github]](Github：https://github.com/diveintodeeplearning/d2l-zh)[[Home]](https://zh.gluon.ai/)
+- 《动手学深度学习》[[pdf]](https://zh.gluon.ai/gluon_tutorials_zh.pdf)[[Github]]()[[Home]](https://zh.gluon.ai/)，[PyTorch 版本代码](https://github.com/ShusenTang/Dive-into-DL-PyTorch)
 - [深度学习图解](https://www.manning.com/books/grokking-deep-learning?a_aid=grokkingdl&a_bid=32715258)[[代码]](https://github.com/iamtrask/Grokking-Deep-Learning)
 - 《21个项目玩转深度学习———基于TensorFlow的实践详解》[[code]](https://github.com/hzy46/Deep-Learning-21-Examples)
 
-### 网站
+------
 
-#### 国内
+## 网站
+
+### 国内
 
 - (**推荐**)[机器之心](https://www.jiqizhixin.com/)
 - [PaperWeekly](https://www.paperweekly.site/tags/176/papers)
 - [通天塔](http://tongtianta.site/)--论文阅读，中英文翻译对比
+- [在线工具](https://tool.lu/)：程序员常用开发工具
+- [Miku](https://miku.tools/):同样是工具，包括视频网站下载器、Linux命令查询等
 
-#### 国外
+
+### 国外
 
 - [Arxiv](https://arxiv.org/)--寻找最新论文的网站
-- [Arxiv Sanity Preserver](http://www.arxiv-sanity.com/)[[Code]](https://github.com/karpathy/arxiv-sanity-preserver)  --对 arXiv 更好的展示论文
+- [Arxiv Sanity Preserver](http://www.arxiv-sanity.com/)[[Code]](https://github.com/karpathy/arxiv-sanity-preserver)  --对 arXiv 更好的展示论文
 - （**强力推荐**）[Papers With Code](https://paperswithcode.com/)--论文及其实现代码
 - （**强力推荐**）[Browse state-of-the-art](https://paperswithcode.com/sota)--记录了16个大类，总共950+个任务的当前最先进的技术
-- [RSIP vision--图像处理和计算机上视觉](https://www.rsipvision.com/)
-- [Learn Opencv](https://www.learnopencv.com/)
-- (**推荐**)[PyimageSearch](https://www.pyimagesearch.com)--计算机视觉、opencv等，并且都是详细实现代码，每一步实现都解释得很清楚！
+- [RSIP vision--图像处理和计算机视觉](https://www.rsipvision.com/)
+
+------
 
 
-### 论文
+## 论文
 
-#### 顶会
+### 顶会
 
 - **AAAI: 顶级人工智能综合会议**
 
@@ -275,34 +331,66 @@ ICCV 2017 accepted paper：http://openaccess.thecvf.com/ICCV2017.py
 
 ECCV 2018 accepted paper：http://openaccess.thecvf.com/ECCV2018.py
 
-#### 综合资源
+### 综合资源
 
 - [deep-learning-papers-translation](https://github.com/SnailTyan/deep-learning-papers-translation)--Github 深度学习论文翻译，包括分类论文，检测论文等
 - [deep-learning-papers](https://github.com/sbrugman/deep-learning-papers)--深度学习的论文，包括视觉、文本、音频，最新更新是2017年10月
 - [各种机器学习任务的顶级结果（论文）汇总](https://github.com/RedditSota/state-of-the-art-result-for-machine-learning-problems)--汇总多个任务，包括视觉、语音、NLP、强化学习等方向的最顶级结果的论文
 - CV 领域常见单词 [[一]](https://zhuanlan.zhihu.com/p/58860096) [[二]](https://zhuanlan.zhihu.com/p/60049093)
 
-### 项目 & Github
+### 网站
 
-- [Tensorflow/models](https://github.com/tensorflow/models)--TensorFlow 官方 Github
+- [arxiv](https://arxiv.org/)
+- [Semantic Sanity: A Personalized Adaptive Feed](https://s2-sanity.apps.allenai.org/cold-start)
+- [arxiv sanity](http://www.arxiv-sanity.com/)
+- [CVPR2019可视化网站](https://mattdeitke.github.io/CVPR-2019/)
+
+
+
+------
+
+## 项目 & Github
+
 - [gluon-cv](https://github.com/dmlc/gluon-cv)--GluonCV 提供了当前计算机视觉性能最优的深度学习模型
 - [imgaug](https://github.com/aleju/imgaug)--Image augmentation for machine learning experiments.数据增强库
 - [DPED](https://github.com/aiff22/DPED)--增强图片质量
 - [Deep Learning - All You Need to Know](https://github.com/osforscience/deep-learning-ocean)--深度学习资源，包含了论文、网络模型、教程、数据集、博客、框架等等
+- [nvidia-smi输出强化工具](https://github.com/peci1/nvidia-htop)
+- [ImageTagger：在线协同图像标记平台](https://github.com/bit-bots/imagetagger)
+- 谷歌的Colab项目，[网站](https://www.google-colab.com/)，github：[awesome-google-colab](https://github.com/firmai/awesome-google-colab)，[awesome-machine-learning-jupyter-notebooks-for-colab](https://github.com/toxtli/awesome-machine-learning-jupyter-notebooks-for-colab)
+- [gpustat](https://github.com/wookayin/gpustat)--监控gpu的使用情况
 
-#### 人脸
+### 人脸
 
 - [awesome-Face_Recognition](https://github.com/ChanChiChoi/awesome-Face_Recognition):近十年的人脸相关的所有论文合集
 - [face_recognition](https://github.com/ageitgey/face_recognition):人脸识别库，可以实现识别、检测、匹配等等功能。
+- [faceswap-GAN](https://github.com/shaoanlu/faceswap-GAN) : 利用 GAN 实现换脸的项目
+- [人脸数据集](https://github.com/jian667/face-dataset)
+- [一款入门级的人脸、视频、文字检测以及识别的项目](https://github.com/vipstone/faceai)
 
-#### 计算机视觉
+
+### 计算机视觉
 
 - [Awesome Image Classification](https://github.com/weiaicunzai/awesome-image-classification)--图像分类方面的汇总，常用的网络模型的性能结果，代码实现以及论文。
 - [Awesome-Image-Inpainting](https://github.com/1900zyh/Awesome-Image-Inpainting)--图像修复方面的资料汇总
+- [图像修复(补全)文献大列表](https://github.com/geekyutao/Image-Inpainting)
+- [迁移学习资料大全](https://github.com/jindongwang/transferlearning)
+- [视频目标检测文献大列表](https://github.com/ZHANGHeng19931123/awesome-video-object-detection)
+- [计算机摄影学系列](https://zhuanlan.zhihu.com/hawkcp)--介绍图像处理相关的知识和代码练习，[https://github.com/yourwanghao/CMUComputationalPhotography](https://github.com/yourwanghao/CMUComputationalPhotography)
+- [开源可视化图像标注工具(支持人脸关键点/不规则四边形/多边形标注) ](https://github.com/zeusees/HyperLabelImg)
+- [图片数据增强工具](https://github.com/albu/albumentations)
 
-### 博客
+### GAN
 
-#### 国内
+- [gans-awesome-applications](https://github.com/nashory/gans-awesome-applications)
+- [18 Impressive Applications of Generative Adversarial Networks (GANs)](https://machinelearningmastery.com/impressive-applications-of-generative-adversarial-networks/)
+- [GAN — Some cool applications of GANs.](https://medium.com/@jonathan_hui/gan-some-cool-applications-of-gans-4c9ecca35900)
+
+------
+
+## 博客
+
+### 国内
 
 1. [机器学习--tornadomeet](http://www.cnblogs.com/tornadomeet/tag/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/default.html?page=1)--这是别人学习机器学习和深度学习做下笔记的博客，有好几十篇博文呢。
 2. [zouxy09的专栏](http://blog.csdn.net/zouxy09)--这个博客不只有机器学习内容，还有一个深度学习的系列。
@@ -313,22 +401,26 @@ ECCV 2018 accepted paper：http://openaccess.thecvf.com/ECCV2018.py
 
 
 
-#### 国外
+### 国外
 
-
-##### 公司&组织
+#### 公司&组织
 
 1. [OpenAI](https://blog.openai.com/)--OpenAI
-2. [Distill](https://distill.pub/)--Distill
-3. [Google AI Blog](https://ai.googleblog.com/)--谷歌AI的博客
-4. [Notes on machine learning](https://peterroelants.github.io/)
-5. [BAIR Blog](http://bair.berkeley.edu/blog/)--伯克利大学AI小组博客
-6. [DeepMind Blog](https://deepmind.com/blog/?category=research)--DeepMind的博客
-7. [FAIR Blog](https://research.fb.com/blog/)--Facebook AI博客
-8. [**Netflix：**Netflix技术博客](https://medium.com/netflix-techblog)
-9. [Towards Data Science](https://towardsdatascience.com/)
+1. [Distill](https://distill.pub/)--Distill
+1. [Google AI Blog](https://ai.googleblog.com/)--谷歌AI的博客
+1. [Notes on machine learning](https://peterroelants.github.io/)
+1. [BAIR Blog](http://bair.berkeley.edu/blog/)--伯克利大学AI小组博客
+1. [DeepMind Blog](https://deepmind.com/blog/?category=research)--DeepMind的博客
+1. [FAIR Blog](https://research.fb.com/blog/)--Facebook AI博客
+1. [**Netflix：**Netflix技术博客](https://medium.com/netflix-techblog)
+1. [**Towards Data Science**](https://towardsdatascience.com/)
+1. [Learn Opencv](https://www.learnopencv.com/)
+1. (**推荐**)[PyimageSearch](https://www.pyimagesearch.com/)--计算机视觉、opencv等，并且都是详细实现代码，每一步实现都解释得很清楚！
+1. [machinelearningmastery](https://machinelearningmastery.com/blog/)
 
-##### 个人
+
+
+#### 个人
 
 1. [SALu](https://shaoanlu.wordpress.com/)--有关于 GAN 方面的文章
 2. [Colah’s Blog](http://colah.github.io/)--神经网络理解方面的入门，以及深度学习知识
@@ -338,10 +430,12 @@ ECCV 2018 accepted paper：http://openaccess.thecvf.com/ECCV2018.py
 6. [Adit Deshpande’s Blog](https://adeshpande3.github.io/)--比较适合入门神经网络
 7. [Graduate Descent](http://timvieira.github.io/blog/)
 
+------
 
-### 比赛
 
-#### 比赛网站
+## 比赛
+
+### 比赛网站
 
 1. [Kaggle](https://www.kaggle.com/)
 2. [天池](https://tianchi.aliyun.com/home/)
@@ -350,7 +444,7 @@ ECCV 2018 accepted paper：http://openaccess.thecvf.com/ECCV2018.py
 5. [JData](https://jdata.jd.com/)
 
 
-#### 比赛经验
+### 比赛经验
 
 - [Kaggle 入门指南](https://zhuanlan.zhihu.com/p/25742261)
 - [分分钟带你杀入Kaggle Top 1%](https://zhuanlan.zhihu.com/p/27424282)
@@ -359,16 +453,25 @@ ECCV 2018 accepted paper：http://openaccess.thecvf.com/ECCV2018.py
 - [Kaggle入门，看这一篇就够了](https://zhuanlan.zhihu.com/p/25686876)
 - [零基础自学两月后三月三次轻松进入kaggle比赛top20小结](https://zhuanlan.zhihu.com/p/29923137)
 
+### 比赛代码
 
-### 数据集
+- [IJCAI18-阿里妈妈广告转化率预测代码（Rank29）](https://github.com/bettenW/IJCAI18_Tianchi_Rank29)
+- [2018科大讯飞营销算法大赛（冠军方案）](https://github.com/bettenW/2018-iFLYTEK-Marketing-Algorithms-Competition-Finals-Rank1)
+- [2018-Tencent-social-advertising-algorithm-contest-rank11](https://github.com/liupengsay/2018-Tencent-social-advertising-algorithm-contest)
+
+
+
+------
+
+## 数据集
 
 - [Datasets for machine learning](https://www.datasetlist.com/) [[收藏：全网最大机器学习数据集，视觉、NLP、音频都在这了]](https://mp.weixin.qq.com/s/o_MTEAdFHkJRFZP5JCeYMQ)--包含机器学习领域的数据集，
 
-#### 八大机器学习数据集
+### 八大机器学习数据集
 
 文章介绍：[[原文]](https://towardsdatascience.com/top-sources-for-machine-learning-datasets-bb6d0dc3378b)[[翻译]](https://mp.weixin.qq.com/s/_iYD4rrIzeCwSfV5dzU7mQ)
 
-##### 1. Kaggle 数据集
+#### 1. Kaggle 数据集
 
 数据集地址：
 
@@ -378,7 +481,7 @@ https://www.kaggle.com/datasets
 
 用户还可以看到与每个数据集相关的“内核”，许多数据科学家还提供了相关手册来分析数据集。
 
-##### 2. Amazon 数据集
+#### 2. Amazon 数据集
 
 数据集地址：
 
@@ -392,7 +495,7 @@ https://registry.opendata.aws/
 
 如果用户正在使用AWS进行机器学习实验和开发，这将非常方便，由于它是AWS网络的本地数据，因此数据集的传输将非常快。
 
-##### 3. UCI机器学习资源库
+#### 3. UCI机器学习资源库
 
 数据集地址：
 
@@ -404,7 +507,7 @@ https://archive.ics.uci.edu/ml/datasets.html
 
 有些UCI的数据集已经是被清洗过的。
 
-##### 4. 谷歌数据集搜索引擎
+#### 4. 谷歌数据集搜索引擎
 
 数据集地址：
 
@@ -414,7 +517,7 @@ https://toolbox.google.com/datasetsearch
 
 他们的目标是统一成千上万个不同的数据集存储库，使这些数据能够且易被发现。
 
-##### 5. 微软数据集
+#### 5. 微软数据集
 
 数据集地址：
 
@@ -425,7 +528,7 @@ https://msropendata.com/
 它在云中包含一个数据存储库，用于促进全球研究社区之间的协作。它提供了一系列用于已发表研究的、经过处理的数据集。
 
 
-##### 6. Awesome Public Datasets Collection
+#### 6. Awesome Public Datasets Collection
 
 数据集地址：
 
@@ -435,7 +538,7 @@ https://github.com/awesomedata/awesome-public-datasets
 
 这里列出的大多数数据集都是免费的，但是在使用任何数据集之前，用户需要检查一下许可要求。
 
-##### 7. 政府数据集
+#### 7. 政府数据集
 
 政府相关数据集也很容易找到的。
 
@@ -466,7 +569,7 @@ https://catalogue.data.govt.nz/dataset
 https://data.gov.in/
 
 
-##### 8. 计算机视觉数据集
+#### 8. 计算机视觉数据集
 
 数据集地址：
 
@@ -478,7 +581,7 @@ Visual Data包含一些可以用来构建计算机视觉(CV)模型的大型数�
 
 ---
 
-#### 常用数据集
+### 常用数据集
 
 1. [Mnist](http://yann.lecun.com/exdb/mnist/)：手写数字数据集，包含 60000 张训练集和 10000 张测试集。
 2. fashion-mnist [[官网]](http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/) [[Github]](https://github.com/zalandoresearch/fashion-mnist)
@@ -488,7 +591,7 @@ Visual Data包含一些可以用来构建计算机视觉(CV)模型的大型数�
 6. Open Images V4[[Description]](https://storage.googleapis.com/openimages/web/factsfigures.html)[[Download]](https://storage.googleapis.com/openimages/web/download.html)[[Paper]](https://arxiv.org/abs/1811.00982)--包含 600 个类别，900w 张数据集，包含图片标签、物体检测框以及视觉关系的标注信息。
 
 
-#### 人脸数据集
+### 人脸数据集
 
 1. [LFW](http://vis-www.cs.umass.edu/lfw/)
 2. [CelebA](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html)
@@ -503,7 +606,7 @@ Visual Data包含一些可以用来构建计算机视觉(CV)模型的大型数�
 5. [FaceScrub](http://vintage.winklerbros.net/facescrub.html)
 6. [MegaFace](http://megaface.cs.washington.edu/)
 
-#### 衣服数据集
+### 衣服数据集
 
 1. [Fashion Detection in the Wild (Deep Clothes Detector)](https://github.com/liuziwei7/fashion-detection)
 
@@ -525,18 +628,44 @@ Visual Data包含一些可以用来构建计算机视觉(CV)模型的大型数�
 
 数据集：[数据集](http://mvc-datasets.github.io/MVC/)
 
-### 面试资料
+3. [DeepFashion2](https://arxiv.org/pdf/1901.07973.pdf)
 
-#### 综合
+Github:[https://github.com/switchablenorms/DeepFashion2](https://github.com/switchablenorms/DeepFashion2)
+
+------
+
+## 面试资料
+
+### 综合
 
 - [Algorithm_Interview_Notes-Chinese](https://github.com/imhuay/Algorithm_Interview_Notes-Chinese)--2018/2019/校招/春招/秋招/算法/机器学习(Machine Learning)/深度学习(Deep Learning)/自然语言处理(NLP)/C/C++/Python/面试笔记
+- [AI算法岗求职攻略（涵盖准备攻略、刷题指南、内推和AI公司清单等资料）](https://github.com/amusi/AI-Job-Notes)
+- [100天学算法](https://github.com/coells/100days)
+- [面试季：如何在面试中介绍自己的项目经验](https://mp.weixin.qq.com/s/Kk9iWraKfj2qfem-JE4OSQ)
+- [Github | 备战秋招&社招，最全面试题集合！](https://mp.weixin.qq.com/s/xBqbqu8tLmUYx8F9Dqm09A)
+- [重磅！AI 算法岗面试经验合集（谷歌/微软/BAT/字节跳动/京东/商汤/旷视/大疆等公司）](https://mp.weixin.qq.com/s/hqdCVgaqvhKyhR-ABWz5gw)
+- [Daily Interview](https://github.com/datawhalechina/Daily-interview)
 
-#### 题目
+### 面经
 
 - [深度学习500问](https://github.com/scutan90/DeepLearning-500-questions)
 - [BAT面试1000题](https://zhuanlan.zhihu.com/c_140166199)--知乎专栏，面试题目
 - [machine-learning-interview-questions](https://github.com/Sroy20/machine-learning-interview-questions)--英文版面试题目，包括深度学习、机器学习和数学
 - [深度学习面试中文版](https://github.com/elviswf/DeepLearningBookQA_cn)--问题，以及给出在《深度学习》中答案所在的页码
 - [技术面试必备基础知识](https://github.com/CyC2018/CS-Notes)--包含算法、操作系统、数据库、网络、JAVA等面试题目
+- [2019年最新总结，阿里，腾讯，百度，美团，头条等技术面试题目，以及答案，专家出题人分析汇总。](https://github.com/0voice/interview_internal_reference#4)
+- [计算机视觉及深度学习_面试问题（一）](https://mp.weixin.qq.com/s/y3bCUC8Mb3lhtsgwusXNWA)
+- [深度学习和机器学习_面试问题（二）](https://mp.weixin.qq.com/s/kg8gIgHFGS3DyJg2OhxO-w)
+- [盘点互联网公司最常见的面试编程题](https://mp.weixin.qq.com/s/fe6YDLhINw_Q2HMtx9XLSg)
+- [46个经典Linux面试题！](https://mp.weixin.qq.com/s/aoNAzHm7wmX5Nch36_q4yg)
+- [机器学习与深度学习常见面试题（上）](https://mp.weixin.qq.com/s/e8rlmjNp9solM3ZJXsioaA)
+- [机器学习与深度学习常见面试题（下）](https://mp.weixin.qq.com/s/aW9yF15lPQWIrQTPu8ki2A)
+- [Deep-Learning-Interview-Book](https://github.com/amusi/Deep-Learning-Interview-Book)：深度学习面试宝典（含数学、机器学习、深度学习、计算机视觉、自然语言处理和SLAM等方向）
 
-#### 面经
+###  简历制作
+
+- [Deedy-Resume](https://github.com/deedy/Deedy-Resume)，[中文版](https://github.com/dyweb/Deedy-Resume-for-Chinese)：简历分为左右两栏，用 XeTeX 进行排版，双栏设计使页面可容纳更多信息。
+- [CV](https://github.com/Ovilia/cv)：简历模板的界面设计简洁清晰，技能堆栈、项目经历、实习经历、教育背景一目了然。
+- [ResumeSample](https://github.com/geekcompany/ResumeSample)：作为一款在 GitHub 上有着接近两万 Star 的简历模板，在技术圈内有较高的知名度，不少开发者对上面所提供的内容也赞赏有加。这个模板里面包含 PHP、iOS、Android、架构师、通用程序员等相关岗位的简历模板，其中的技能清单与技能关键字有比较高的参考价值。
+- [适合中文的简历模板收集（LaTeX，HTML/JS and so on）](https://github.com/dyweb/awesome-resume-for-chinese)
+
