@@ -1,8 +1,6 @@
 # 数据加载和预处理
 
 
-
-
 ## 图片数据建模
 
 
@@ -103,7 +101,7 @@ torchtext常见API一览
 - torchtext.data.Iterator: 迭代器，用来生成 batch
 - torchtext.datasets: 包含了常见的数据集.
 
-​
+
 
 ```python
 import torch
@@ -347,7 +345,7 @@ def load_state_dict(model, model_root):
 - 继承 `nn.Module`基类构建自定义模型
 - 继承 `nn.Module`基类构建模型并辅助应用模型容器进行封装。
 
-​
+
 
 ### 方法 1：nn.Sequential
 第一种方法，使用 `nn.Sequential`按层顺序构建模型例子如下所示：
@@ -403,7 +401,7 @@ Params size (MB): 0.002483
 Estimated Total Size (MB): 0.003090
 ----------------------------------------------------------------
 ```
-​
+
 
 ### 方法 2：继承nn.Module基类构建自定义模型
 ```python
@@ -489,7 +487,7 @@ Estimated Total Size (MB): 0.578388
 ----------------------------------------------------------------
 
 ```
-​
+
 
 ### 方法 3：继承 `nn.Module`基类构建模型并辅助应用模型容器进行封装。
 ```python
@@ -577,11 +575,11 @@ Estimated Total Size (MB): 0.443531
 ----------------------------------------------------------------
 
 ```
-​
 
-​
 
-​
+
+
+
 
 
 ---
@@ -651,7 +649,6 @@ net_loaded(torch.tensor(x_test[0:10]).float()).data
 ---
 
 # 模型训练和预测
-## 
 ## 训练模型
 有3类典型的训练循环代码风格：脚本形式训练循环，函数形式训练循环，类形式训练循环。
 ​
@@ -906,6 +903,22 @@ epoch =  19
 ```
 
 
+## 模型修改
+
+
+### bgr 模型转 rgb 模型
+对于使用 bgr 图片训练得到的 bgr 模型，想替换为用 rgb 图片训练，可以直接修改 bgr 模型的第一层通道顺序，代码例子如下：
+```python
+import torch
+# 加载训练好的 bgr 模型
+model = torch.load(bgr_model)
+# 修改第一层通道顺序
+model[layer1_name] = model[layer1_name][: [2,1,0], :, :]
+# 保存为 rgb 输入的模型
+torch.save(model, model_name)
+```
+
+
 
 
 
@@ -971,6 +984,428 @@ if __name__ == '__main__':
 ```
 
 
+
+
+## 计算模型 FLOPs 和 Params
+参考文章：
+
+- [pytorch计算模型FLOPs和Params](https://zhuanlan.zhihu.com/p/337810633)
+
+
+
+FLOPs 影响模型的推理时间，而 Params 参数量对设备内存有要求，这里介绍两个工具来分别计算模型的 FLOPs 和 Params。
+​
+
+### pytorch-OpCounter
+工具地址：[https://github.com/Lyken17/pytorch-OpCounter](https://github.com/Lyken17/pytorch-OpCounter)
+​
+
+**安装**
+```python
+pip install thop（推荐用这个） 或者 pip install --upgrade git+https://github.com/Lyken17/pytorch-OpCounter.git（这个方法需要同时安装pytorch）
+```
+**用法：**
+```python
+from torchvision.models import resnet50from thop import profile
+model = resnet50()
+flops, params = profile(model, input_size=(1, 3, 224,224))
+print('FLOPs = ' + str(flops/1000**3) + 'G')
+print('Params = ' + str(params/1000**2) + 'M')
+```
+如果是自己的模型：
+```python
+class YourModule(nn.Module):
+model = YourModule()
+flops, params = profile(model, input_size=(1, 3, 224,224))
+print('FLOPs = ' + str(flops/1000**3) + 'G')
+print('Params = ' + str(params/1000**2) + 'M')
+```
+如果需要自定义规则：
+```python
+class YourModule(nn.Module):
+# your definition
+def count_your_model(model, x, y):
+# your rule
+flops, params = profile(model, input_size=(1, 3, 224,224),
+custom_ops={YourModule: count_your_model})
+print('FLOPs = ' + str(flops/1000**3) + 'G')
+print('Params = ' + str(params/1000**2) + 'M')
+```
+
+
+### flops-counter
+工具地址：[https://github.com/sovrasov/flops-counter.pytorch](https://github.com/sovrasov/flops-counter.pytorch)
+​
+
+**安装**
+```python
+pip install ptflops 或者 pip install --upgrade git+https://github.com/sovrasov/flops-counter.pytorch.git
+```
+**用法**
+```python
+import torchvision.models as models
+import torch
+from ptflops import get_model_complexity_info
+
+with torch.cuda.device(0):
+  net = models.densenet161()
+  macs, params = get_model_complexity_info(net, (3, 224, 224), as_strings=True,
+                                           print_per_layer_stat=True, verbose=True)
+  print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+  print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+```
+其中 `print_per_layer_stat` 用于管理是否输出每一层的参数量和计算量。
+​
+
+## 查找训练中没有使用到的参数
+代码如下所示，通过判断参数的梯度 grad 是否为空，判断其是否参与了训练。
+```python
+ loss.backward()
+ for name, param in model.named_parameters():
+    if param.grad is None:
+        print(name)
+ optimizer.step()
+```
+
+
+
+
+
+---
+
+# 应用
+## 线性回归模型
+使用 PyTorch 实现一个线性回归模型，可以分别用三种方式实现，对应 PyTorch 的低、中、高阶 API
+​
+
+### 低阶 API 
+```python
+# 定义模型
+class LinearRegression: 
+    
+    def __init__(self):
+        self.w = torch.randn_like(w0,requires_grad=True)
+        self.b = torch.zeros_like(b0,requires_grad=True)
+        
+    #正向传播
+    def forward(self,x): 
+        return x@self.w + self.b
+
+    # 损失函数
+    def loss_func(self,y_pred,y_true):  
+        return torch.mean((y_pred - y_true)**2/2)
+
+model = LinearRegression()
+
+# 训练模型
+def train_step(model, features, labels):
+    
+    predictions = model.forward(features)
+    loss = model.loss_func(predictions,labels)
+        
+    # 反向传播求梯度
+    loss.backward()
+    
+    # 使用torch.no_grad()避免梯度记录，也可以通过操作 model.w.data 实现避免梯度记录 
+    with torch.no_grad():
+        # 梯度下降法更新参数
+        model.w -= 0.001*model.w.grad
+        model.b -= 0.001*model.b.grad
+
+        # 梯度清零
+        model.w.grad.zero_()
+        model.b.grad.zero_()
+    return loss
+
+def train_model(model,epochs):
+    for epoch in range(1,epochs+1):
+        for features, labels in data_iter(X,Y,10):
+            loss = train_step(model,features,labels)
+
+        if epoch%200==0:
+            printbar()
+            print("epoch =",epoch,"loss = ",loss.item())
+            print("model.w =",model.w.data)
+            print("model.b =",model.b.data)
+
+train_model(model,epochs = 1000)
+```
+### 中阶 API
+```python
+model = nn.Linear(2,1) #线性层
+
+model.loss_func = nn.MSELoss()
+model.optimizer = torch.optim.SGD(model.parameters(),lr = 0.01)
+
+def train_step(model, features, labels):
+    
+    predictions = model(features)
+    loss = model.loss_func(predictions,labels)
+    loss.backward()
+    model.optimizer.step()
+    model.optimizer.zero_grad()
+    return loss.item()
+
+def train_model(model,epochs):
+    for epoch in range(1,epochs+1):
+        for features, labels in dl:
+            loss = train_step(model,features,labels)
+        if epoch%50==0:
+            printbar()
+            w = model.state_dict()["weight"]
+            b = model.state_dict()["bias"]
+            print("epoch =",epoch,"loss = ",loss)
+            print("w =",w)
+            print("b =",b)
+train_model(model,epochs = 200)
+```
+
+
+
+
+### 高阶 API
+Pytorch没有官方的高阶API，一般需要用户自己实现训练循环、验证循环、和预测循环。
+这里通过仿照tf.keras.Model的功能对Pytorch的nn.Module进行了封装，设计了torchkeras.Model类，实现了 fit, validate，predict, summary 方法，相当于用户自定义高阶API，并示范了用它实现线性回归模型。
+​
+
+```python
+# 继承用户自定义模型
+from torchkeras import Model
+class LinearRegression(Model):
+    def __init__(self):
+        super(LinearRegression, self).__init__()
+        self.fc = nn.Linear(2,1)
+    
+    def forward(self,x):
+        return self.fc(x)
+
+model = LinearRegression()
+
+### 使用fit方法进行训练
+
+def mean_absolute_error(y_pred,y_true):
+    return torch.mean(torch.abs(y_pred-y_true))
+
+def mean_absolute_percent_error(y_pred,y_true):
+    absolute_percent_error = (torch.abs(y_pred-y_true)+1e-7)/(torch.abs(y_true)+1e-7)
+    return torch.mean(absolute_percent_error)
+
+model.compile(loss_func = nn.MSELoss(),
+              optimizer= torch.optim.Adam(model.parameters(),lr = 0.01),
+              metrics_dict={"mae":mean_absolute_error,"mape":mean_absolute_percent_error})
+
+dfhistory = model.fit(200,dl_train = dl_train, dl_val = dl_valid,log_step_freq = 20)
+
+```
+
+
+
+
+
+---
+
+## DNN 二分类模型
+
+
+### 低阶 API
+```python
+class DNNModel(nn.Module):
+    def __init__(self):
+        super(DNNModel, self).__init__()
+        self.w1 = nn.Parameter(torch.randn(2,4))
+        self.b1 = nn.Parameter(torch.zeros(1,4))
+        self.w2 = nn.Parameter(torch.randn(4,8))
+        self.b2 = nn.Parameter(torch.zeros(1,8))
+        self.w3 = nn.Parameter(torch.randn(8,1))
+        self.b3 = nn.Parameter(torch.zeros(1,1))
+
+    # 正向传播
+    def forward(self,x):
+        x = torch.relu(x@self.w1 + self.b1)
+        x = torch.relu(x@self.w2 + self.b2)
+        y = torch.sigmoid(x@self.w3 + self.b3)
+        return y
+    
+    # 损失函数(二元交叉熵)
+    def loss_func(self,y_pred,y_true):  
+        #将预测值限制在1e-7以上, 1- (1e-7)以下，避免log(0)错误
+        eps = 1e-7
+        y_pred = torch.clamp(y_pred,eps,1.0-eps)
+        bce = - y_true*torch.log(y_pred) - (1-y_true)*torch.log(1-y_pred)
+        return torch.mean(bce)
+    
+    # 评估指标(准确率)
+    def metric_func(self,y_pred,y_true):
+        y_pred = torch.where(y_pred>0.5,torch.ones_like(y_pred,dtype = torch.float32),
+                          torch.zeros_like(y_pred,dtype = torch.float32))
+        acc = torch.mean(1-torch.abs(y_true-y_pred))
+        return acc
+    
+model = DNNModel()
+
+def train_step(model, features, labels):   
+    
+    # 正向传播求损失
+    predictions = model.forward(features)
+    loss = model.loss_func(predictions,labels)
+    metric = model.metric_func(predictions,labels)
+        
+    # 反向传播求梯度
+    loss.backward()
+    
+    # 梯度下降法更新参数
+    for param in model.parameters():
+        #注意是对param.data进行重新赋值,避免此处操作引起梯度记录
+        param.data = (param.data - 0.01*param.grad.data) 
+        
+    # 梯度清零
+    model.zero_grad()
+        
+    return loss.item(),metric.item()
+ 
+
+def train_model(model,epochs):
+    for epoch in range(1,epochs+1):
+        loss_list,metric_list = [],[]
+        for features, labels in data_iter(X,Y,20):
+            lossi,metrici = train_step(model,features,labels)
+            loss_list.append(lossi)
+            metric_list.append(metrici)
+        loss = np.mean(loss_list)
+        metric = np.mean(metric_list)
+
+        if epoch%100==0:
+            printbar()
+            print("epoch =",epoch,"loss = ",loss,"metric = ",metric)
+        
+train_model(model,epochs = 1000)
+```
+
+
+### 中阶 API
+```python
+class DNNModel(nn.Module):
+    def __init__(self):
+        super(DNNModel, self).__init__()
+        self.fc1 = nn.Linear(2,4)
+        self.fc2 = nn.Linear(4,8) 
+        self.fc3 = nn.Linear(8,1)
+
+    # 正向传播
+    def forward(self,x):
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        y = nn.Sigmoid()(self.fc3(x))
+        return y
+    
+    # 损失函数
+    def loss_func(self,y_pred,y_true):
+        return nn.BCELoss()(y_pred,y_true)
+    
+    # 评估函数(准确率)
+    def metric_func(self,y_pred,y_true):
+        y_pred = torch.where(y_pred>0.5,torch.ones_like(y_pred,dtype = torch.float32),
+                          torch.zeros_like(y_pred,dtype = torch.float32))
+        acc = torch.mean(1-torch.abs(y_true-y_pred))
+        return acc
+    
+    # 优化器
+    @property
+    def optimizer(self):
+        return torch.optim.Adam(self.parameters(),lr = 0.001)
+    
+model = DNNModel()
+
+def train_step(model, features, labels):
+    
+    # 正向传播求损失
+    predictions = model(features)
+    loss = model.loss_func(predictions,labels)
+    metric = model.metric_func(predictions,labels)
+    
+    # 反向传播求梯度
+    loss.backward()
+    
+    # 更新模型参数
+    model.optimizer.step()
+    model.optimizer.zero_grad()
+    
+    return loss.item(),metric.item()
+
+def train_model(model,epochs):
+    for epoch in range(1,epochs+1):
+        loss_list,metric_list = [],[]
+        for features, labels in dl:
+            lossi,metrici = train_step(model,features,labels)
+            loss_list.append(lossi)
+            metric_list.append(metrici)
+        loss = np.mean(loss_list)
+        metric = np.mean(metric_list)
+
+        if epoch%100==0:
+            printbar()
+            print("epoch =",epoch,"loss = ",loss,"metric = ",metric)
+        
+train_model(model,epochs = 300)
+```
+
+
+### 高阶 API
+通过继承torchkeras.LightModel模型接口，实现DNN二分类模型
+```python
+class Net(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(2,4)
+        self.fc2 = nn.Linear(4,8) 
+        self.fc3 = nn.Linear(8,1)
+        
+    def forward(self,x):
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        y = nn.Sigmoid()(self.fc3(x))
+        return y
+        
+class Model(torchkeras.LightModel):
+    
+    #loss,and optional metrics
+    def shared_step(self,batch)->dict:
+        x, y = batch
+        prediction = self(x)
+        loss = nn.BCELoss()(prediction,y)
+        preds = torch.where(prediction>0.5,torch.ones_like(prediction),torch.zeros_like(prediction))
+        acc = pl.metrics.functional.accuracy(preds, y)
+        # attention: there must be a key of "loss" in the returned dict 
+        dic = {"loss":loss,"acc":acc} 
+        return dic
+    
+    #optimizer,and optional lr_scheduler
+    def configure_optimizers(self):
+        optimizer = torch.optim.Adam(self.parameters(), lr=1e-2)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.0001)
+        return {"optimizer":optimizer,"lr_scheduler":lr_scheduler}
+    
+pl.seed_everything(1234)
+net = Net()
+model = Model(net)
+
+
+torchkeras.summary(model,input_shape =(2,))
+
+ckpt_cb = pl.callbacks.ModelCheckpoint(monitor='val_loss')
+
+# set gpus=0 will use cpu，
+# set gpus=1 will use 1 gpu
+# set gpus=2 will use 2gpus 
+# set gpus = -1 will use all gpus 
+# you can also set gpus = [0,1] to use the  given gpus
+# you can even set tpu_cores=2 to use two tpus 
+
+trainer = pl.Trainer(max_epochs=100,gpus = 0, callbacks=[ckpt_cb]) 
+
+trainer.fit(model,dl_train,dl_valid)
+
+```
 
 
 
