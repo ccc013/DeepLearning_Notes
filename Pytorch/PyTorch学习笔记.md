@@ -1,17 +1,19 @@
 # 基础
+
+
 ## 张量 Tensor
 参考文章：
 
 1. [4-1,张量的结构操作](https://github.com/lyhue1991/eat_pytorch_in_20_days/blob/master/4-1,%E5%BC%A0%E9%87%8F%E7%9A%84%E7%BB%93%E6%9E%84%E6%93%8D%E4%BD%9C.md)
 
-​
+
 
 张量的操作主要分结构操作和数学运算操作两种：
 
 1. 结构操作：创建、索引切片、维度变换、合并分割等
 1. 数学运算：标量运算、向量运算、矩阵运算等。
 
-​
+
 
 ### 结构操作
 #### 创建张量
@@ -23,7 +25,7 @@
 1. torch.fill_()：改变一个 tensor 的数值
 1. 生成指定的数据分布的 tensor：torch.randperm, torch.normal, 
 
-​
+
 
 ```python
 import numpy as np
@@ -260,7 +262,7 @@ torch.index_fill(scores,dim = 1,index = torch.tensor([0,5,9]),value = 100)
 b = torch.masked_fill(scores,scores<60,60)
 #等价于b = scores.masked_fill(scores<60,60)
 ```
-​
+
 
 #### 维度变换
 维度变换相关函数主要有：
@@ -361,7 +363,7 @@ tensor([[1, 4],
         [3, 6]])
 
 ```
-​
+
 
 #### 合并分割
 可以用`torch.cat`方法和`torch.stack`方法将多个张量合并，可以用`torch.split`方法把一个张量分割成多个张量。
@@ -442,7 +444,7 @@ tensor([[1., 2.],
 tensor([[ 9., 10.]])
 tensor([[11., 12.]])
 ```
-​
+
 
 
 ---
@@ -577,7 +579,7 @@ indices=tensor([[1, 2, 0],
         [2, 0, 1]]))
 
 ```
-​
+
 
 #### 矩阵运算
 矩阵必须是二维的。类似torch.tensor([1,2,3])这样的不是矩阵。
@@ -712,6 +714,1088 @@ tensor([[1, 2, 3],
 
 ---
 
+## nn.functional 和 nn.Module
+ 参考文章：
+
+1. [4-3,nn.functional 和 nn.Module](https://github.com/lyhue1991/eat_pytorch_in_20_days/blob/master/4-3,nn.functional%E5%92%8Cnn.Module.md)
+
+
+
+```python
+import os
+import datetime
+
+#打印时间
+def printbar():
+    nowtime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print("\n"+"=========="*8 + "%s"%nowtime)
+
+#mac系统上pytorch和matplotlib在jupyter中同时跑需要更改环境变量
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE" 
+
+```
+PyTorch 中和神经网络相关的功能组件大多数都封装在 `torch.nn` 模块下，它们有的是既有函数形式实现，也有类形式实现，其中 `nn.functional` （一般引入后改名为 F）有各种功能组件的函数实现，比如：
+
+- 激活函数：`F.relu, F.sigmoid, F.tanh, F.softmax`
+- 模型层：`F.linear, F.conv2d, F.max_pool2d, F.dropout2d, F.embedding`
+- 损失函数：`F.mse_loss, F.binary_cross_entropy, F.cross_entropy`
+
+
+
+为了便于对参数进行管理，一般通过继承 `nn.Module` 转换成为类的实现形式，并直接封装在 nn 模块下。例如：
+
+- 激活函数：`nn.ReLU, nn.Sigmoid, nn.Tanh, nn.Softmax`
+- 模型层：`nn.Linear, nn.Conv2d, nn.MaxPool2d, nn.Dropout2d, nn.Embedding`
+- 损失函数：`nn.BCELoss, nn.MSELoss, nn.CrossEntropyLoss`
+
+
+
+实际上`nn.Module`除了可以管理其引用的各种参数，还可以管理其引用的子模块，功能十分强大。
+​
+
+### 使用 nn.Module  管理参数
+在Pytorch中，模型的参数是需要被优化器训练的，因此，通常要设置参数为 `requires_grad = True` 的张量。同时，在一个模型中，往往有许多的参数，要手动管理这些参数并不是一件容易的事情。
+Pytorch一般将参数用 `nn.Parameter`来表示，并且用 `nn.Module`来管理其结构下的所有参数。
+```python
+import torch 
+from torch import nn 
+import torch.nn.functional  as F
+from matplotlib import pyplot as plt
+
+# nn.Parameter 具有 requires_grad = True 属性
+w = nn.Parameter(torch.randn(2,2))
+print(w)
+print(w.requires_grad)
+
+#Parameter containing:
+tensor([[ 0.3544, -1.1643],
+        [ 1.2302,  1.3952]], requires_grad=True)
+True
+
+# nn.ParameterList 可以将多个nn.Parameter组成一个列表
+params_list = nn.ParameterList([nn.Parameter(torch.rand(8,i)) for i in range(1,3)])
+print(params_list)
+print(params_list[0].requires_grad)
+
+#ParameterList(
+    (0): Parameter containing: [torch.FloatTensor of size 8x1]
+    (1): Parameter containing: [torch.FloatTensor of size 8x2]
+)
+True
+
+
+#nn.ParameterDict 可以将多个nn.Parameter组成一个字典
+
+params_dict = nn.ParameterDict({"a":nn.Parameter(torch.rand(2,2)),
+                               "b":nn.Parameter(torch.zeros(2))})
+print(params_dict)
+print(params_dict["a"].requires_grad)
+
+#ParameterDict(
+    (a): Parameter containing: [torch.FloatTensor of size 2x2]
+    (b): Parameter containing: [torch.FloatTensor of size 2]
+)
+True
+
+# 可以用Module将它们管理起来
+# module.parameters()返回一个生成器，包括其结构下的所有parameters
+module = nn.Module()
+module.w = w
+module.params_list = params_list
+module.params_dict = params_dict
+
+num_param = 0
+for param in module.parameters():
+    print(param,"\n")
+    num_param = num_param + 1
+print("number of Parameters =",num_param)
+
+# Parameter containing:
+tensor([[ 0.3544, -1.1643],
+        [ 1.2302,  1.3952]], requires_grad=True) 
+
+Parameter containing:
+tensor([[0.9391],
+        [0.7590],
+        [0.6899],
+        [0.4786],
+        [0.2392],
+        [0.9645],
+        [0.1968],
+        [0.1353]], requires_grad=True) 
+
+Parameter containing:
+tensor([[0.8012, 0.9587],
+        [0.0276, 0.5995],
+        [0.7338, 0.5559],
+        [0.1704, 0.5814],
+        [0.7626, 0.1179],
+        [0.4945, 0.2408],
+        [0.7179, 0.0575],
+        [0.3418, 0.7291]], requires_grad=True) 
+
+Parameter containing:
+tensor([[0.7729, 0.2383],
+        [0.7054, 0.9937]], requires_grad=True) 
+
+Parameter containing:
+tensor([0., 0.], requires_grad=True) 
+
+number of Parameters = 5
+
+```
+实践当中，一般通过继承 `nn.Module` 来构建模块类，并将所有含有需要学习的参数的部分放在构造函数中。
+```python
+#以下范例为Pytorch中nn.Linear的源码的简化版本
+#可以看到它将需要学习的参数放在了__init__构造函数中，并在forward中调用F.linear函数来实现计算逻辑。
+
+class Linear(nn.Module):
+    __constants__ = ['in_features', 'out_features']
+
+    def __init__(self, in_features, out_features, bias=True):
+        super(Linear, self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = nn.Parameter(torch.Tensor(out_features, in_features))
+        if bias:
+            self.bias = nn.Parameter(torch.Tensor(out_features))
+        else:
+            self.register_parameter('bias', None)
+
+    def forward(self, input):
+        return F.linear(input, self.weight, self.bias)
+```
+
+
+### 使用 nn.Module  管理子模块
+一般情况下，我们都很少直接使用 `nn.Parameter` 来定义参数构建模型，而是**通过一些拼装一些常用的模型层来构造模型**。这些模型层也是继承自 `nn.Module` 的对象,本身也包括参数，属于我们要定义的模块的子模块。
+​
+
+`nn.Module`提供了一些方法可以管理这些子模块。
+
+- `children()` 方法: 返回生成器，包括模块下的所有子模块。
+- `named_children()`方法：返回一个生成器，包括模块下的所有子模块，以及它们的名字。
+- `modules()`方法：返回一个生成器，包括模块下的所有各个层级的模块，包括模块本身。
+- `named_modules()`方法：返回一个生成器，包括模块下的所有各个层级的模块以及它们的名字，包括模块本身。
+
+其中 `chidren()`方法和 `named_children()`方法较多使用。
+​
+
+`modules()`方法和 `named_modules()`方法较少使用，其功能可以通过多个 `named_children()`的嵌套使用实现。
+首先定义一个简单的网络：
+```python
+class Net(nn.Module):
+    
+    def __init__(self):
+        super(Net, self).__init__()
+        
+        self.embedding = nn.Embedding(num_embeddings = 10000,embedding_dim = 3,padding_idx = 1)
+        self.conv = nn.Sequential()
+        self.conv.add_module("conv_1",nn.Conv1d(in_channels = 3,out_channels = 16,kernel_size = 5))
+        self.conv.add_module("pool_1",nn.MaxPool1d(kernel_size = 2))
+        self.conv.add_module("relu_1",nn.ReLU())
+        self.conv.add_module("conv_2",nn.Conv1d(in_channels = 16,out_channels = 128,kernel_size = 2))
+        self.conv.add_module("pool_2",nn.MaxPool1d(kernel_size = 2))
+        self.conv.add_module("relu_2",nn.ReLU())
+        
+        self.dense = nn.Sequential()
+        self.dense.add_module("flatten",nn.Flatten())
+        self.dense.add_module("linear",nn.Linear(6144,1))
+        self.dense.add_module("sigmoid",nn.Sigmoid())
+        
+    def forward(self,x):
+        x = self.embedding(x).transpose(1,2)
+        x = self.conv(x)
+        y = self.dense(x)
+        return y
+    
+net = Net()
+```
+接着可以开始调用刚说到的几个方法，`children()`:
+```python
+i = 0
+for child in net.children():
+    i+=1
+    print(child,"\n")
+print("child number",i)
+# Embedding(10000, 3, padding_idx=1) 
+
+Sequential(
+  (conv_1): Conv1d(3, 16, kernel_size=(5,), stride=(1,))
+  (pool_1): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (relu_1): ReLU()
+  (conv_2): Conv1d(16, 128, kernel_size=(2,), stride=(1,))
+  (pool_2): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (relu_2): ReLU()
+) 
+
+Sequential(
+  (flatten): Flatten()
+  (linear): Linear(in_features=6144, out_features=1, bias=True)
+  (sigmoid): Sigmoid()
+) 
+
+child number 3
+```
+`named_children()`:
+```python
+i = 0
+for name,child in net.named_children():
+    i+=1
+    print(name,":",child,"\n")
+print("child number",i)
+
+# embedding : Embedding(10000, 3, padding_idx=1) 
+
+conv : Sequential(
+  (conv_1): Conv1d(3, 16, kernel_size=(5,), stride=(1,))
+  (pool_1): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (relu_1): ReLU()
+  (conv_2): Conv1d(16, 128, kernel_size=(2,), stride=(1,))
+  (pool_2): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (relu_2): ReLU()
+) 
+
+dense : Sequential(
+  (flatten): Flatten()
+  (linear): Linear(in_features=6144, out_features=1, bias=True)
+  (sigmoid): Sigmoid()
+) 
+
+child number 3
+
+```
+`net.modules()` ：
+```python
+i = 0
+for module in net.modules():
+    i+=1
+    print(module)
+print("module number:",i)
+
+# Net(
+  (embedding): Embedding(10000, 3, padding_idx=1)
+  (conv): Sequential(
+    (conv_1): Conv1d(3, 16, kernel_size=(5,), stride=(1,))
+    (pool_1): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (relu_1): ReLU()
+    (conv_2): Conv1d(16, 128, kernel_size=(2,), stride=(1,))
+    (pool_2): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (relu_2): ReLU()
+  )
+  (dense): Sequential(
+    (flatten): Flatten()
+    (linear): Linear(in_features=6144, out_features=1, bias=True)
+    (sigmoid): Sigmoid()
+  )
+)
+Embedding(10000, 3, padding_idx=1)
+Sequential(
+  (conv_1): Conv1d(3, 16, kernel_size=(5,), stride=(1,))
+  (pool_1): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (relu_1): ReLU()
+  (conv_2): Conv1d(16, 128, kernel_size=(2,), stride=(1,))
+  (pool_2): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (relu_2): ReLU()
+)
+Conv1d(3, 16, kernel_size=(5,), stride=(1,))
+MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+ReLU()
+Conv1d(16, 128, kernel_size=(2,), stride=(1,))
+MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+ReLU()
+Sequential(
+  (flatten): Flatten()
+  (linear): Linear(in_features=6144, out_features=1, bias=True)
+  (sigmoid): Sigmoid()
+)
+Flatten()
+Linear(in_features=6144, out_features=1, bias=True)
+Sigmoid()
+module number: 13
+```
+下面我们通过`named_children`方法找到embedding层，并将其参数设置为不可训练(相当于冻结embedding层)。
+```python
+children_dict = {name:module for name,module in net.named_children()}
+
+print(children_dict)
+embedding = children_dict["embedding"]
+embedding.requires_grad_(False) #冻结其参数
+
+# {'embedding': Embedding(10000, 3, padding_idx=1), 'conv': Sequential(
+  (conv_1): Conv1d(3, 16, kernel_size=(5,), stride=(1,))
+  (pool_1): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (relu_1): ReLU()
+  (conv_2): Conv1d(16, 128, kernel_size=(2,), stride=(1,))
+  (pool_2): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (relu_2): ReLU()
+), 'dense': Sequential(
+  (flatten): Flatten()
+  (linear): Linear(in_features=6144, out_features=1, bias=True)
+  (sigmoid): Sigmoid()
+)}
+
+#可以看到其第一层的参数已经不可以被训练了。
+for param in embedding.parameters():
+    print(param.requires_grad)
+    print(param.numel())
+# False
+30000
+
+from torchkeras import summary
+summary(net,input_shape = (200,),input_dtype = torch.LongTensor)
+# 不可训练参数数量增加
+
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+         Embedding-1               [-1, 200, 3]          30,000
+            Conv1d-2              [-1, 16, 196]             256
+         MaxPool1d-3               [-1, 16, 98]               0
+              ReLU-4               [-1, 16, 98]               0
+            Conv1d-5              [-1, 128, 97]           4,224
+         MaxPool1d-6              [-1, 128, 48]               0
+              ReLU-7              [-1, 128, 48]               0
+           Flatten-8                 [-1, 6144]               0
+            Linear-9                    [-1, 1]           6,145
+          Sigmoid-10                    [-1, 1]               0
+================================================================
+Total params: 40,625
+Trainable params: 10,625
+Non-trainable params: 30,000
+----------------------------------------------------------------
+Input size (MB): 0.000763
+Forward/backward pass size (MB): 0.287796
+Params size (MB): 0.154972
+Estimated Total Size (MB): 0.443531
+----------------------------------------------------------------
+
+```
+
+---
+
+## Dataset 和 DataLoader
+
+Pytorch通常使用 Dataset 和 DataLoader 这两个工具类来构建数据管道。
+
+Dataset **定义了数据集的内容，它相当于一个类似列表的数据结构，具有确定的长度，能够用索引获取数据集中的元素**。
+
+而 DataLoader **定义了按 batch 加载数据集的方法**，它是一个实现了`__iter__`方法的可迭代对象，每次迭代输出一个batch的数据。
+
+DataLoader 能够控制 batch 的大小，batch 中元素的采样方法，以及将 batch 结果整理成模型所需输入形式的方法，并且能够使用多进程读取数据。
+
+在绝大部分情况下，用户只需实现Dataset的 `__len__` 方法和 `__getitem__` 方法，就可以轻松构建自己的数据集，并用默认数据管道进行加载。
+
+
+
+### 概述
+
+**1. 获取一个batch数据的步骤**
+
+让我们考虑一下从一个数据集中获取一个batch的数据需要哪些步骤。
+
+(假定数据集的特征和标签分别表示为张量`X`和`Y`，数据集可以表示为`(X,Y)`, 假定batch大小为`m`)
+
+1. 首先我们要确定数据集的长度`n`。结果类似：`n = 1000`。
+
+2. 然后我们从`0`到`n-1`的范围中抽样出`m`个数(batch大小)。假定`m=4`, 拿到的结果是一个列表，类似：`indices = [1,4,8,9]`
+
+3. 接着我们从数据集中去取这`m`个数对应下标的元素。拿到的结果是一个元组列表，类似：`samples = [(X[1],Y[1]),(X[4],Y[4]),(X[8],Y[8]),(X[9],Y[9])]`
+
+4. 最后我们将结果整理成两个张量作为输出。拿到的结果是两个张量，类似`batch = (features,labels) `，其中 `features = torch.stack([X[1],X[4],X[8],X[9]])`
+
+```python
+labels = torch.stack([Y[1],Y[4],Y[8],Y[9]])
+```
+
+
+
+**2. Dataset和DataLoader的功能分工**
+
+上述第1个步骤确定数据集的长度是由 Dataset的`__len__` 方法实现的。
+
+第2个步骤从`0`到`n-1`的范围中抽样出`m`个数的方法是由 DataLoader的 `sampler`和 `batch_sampler`参数指定的。
+
+`sampler` 参数**指定单个元素抽样方法，一般无需用户设置**，程序默认在DataLoader的参数`shuffle=True `时采用随机抽样，`shuffle=False` 时采用顺序抽样。
+
+`batch_sampler `参数**将多个抽样的元素整理成一个列表，一般无需用户设置**，默认方法在DataLoader的参数`drop_last=True`时会丢弃数据集最后一个长度不能被batch大小整除的批次，在`drop_last=False`时保留最后一个批次。
+
+第3个步骤的核心逻辑根据下标取数据集中的元素 是由 Dataset 的 `__getitem__`方法实现的。
+
+第4个步骤的逻辑由DataLoader的参数`collate_fn`指定。一般情况下也无需用户设置。
+
+
+
+**3. Dataset和DataLoader的主要接口**
+
+以下是 Dataset和 DataLoader的核心接口逻辑伪代码，不完全和源码一致。
+
+```python
+import torch 
+class Dataset(object):
+    def __init__(self):
+        pass
+    
+    def __len__(self):
+        raise NotImplementedError
+        
+    def __getitem__(self,index):
+        raise NotImplementedError
+        
+
+class DataLoader(object):
+    def __init__(self,dataset,batch_size,collate_fn,shuffle = True,drop_last = False):
+        self.dataset = dataset
+        self.collate_fn = collate_fn
+        self.sampler =torch.utils.data.RandomSampler if shuffle else \
+           torch.utils.data.SequentialSampler
+        self.batch_sampler = torch.utils.data.BatchSampler
+        self.sample_iter = self.batch_sampler(
+            self.sampler(range(len(dataset))),
+            batch_size = batch_size,drop_last = drop_last)
+        
+    def __next__(self):
+        indices = next(self.sample_iter)
+        batch = self.collate_fn([self.dataset[i] for i in indices])
+        return batch
+    
+```
+
+
+
+### Dataset 创建数据集
+
+Dataset创建数据集常用的方法有：
+
+- 使用 `torch.utils.data.TensorDataset`  根据 Tensor 创建数据集(numpy的array，Pandas的DataFrame需要先转换成Tensor)。
+- 使用 `torchvision.datasets.ImageFolder` 根据图片目录创建图片数据集。
+- 继承 `torch.utils.data.Dataset` 创建自定义数据集。
+
+此外，还可以通过
+
+- `torch.utils.data.random_split` 将一个数据集分割成多份，常用于分割训练集，验证集和测试集。
+- 调用Dataset的加法运算符(`+`)将多个数据集合并成一个数据集。
+
+
+
+**1，根据Tensor创建数据集**
+
+```python
+import numpy as np 
+import torch 
+from torch.utils.data import TensorDataset,Dataset,DataLoader,random_split 
+# 根据Tensor创建数据集
+
+from sklearn import datasets 
+iris = datasets.load_iris()
+ds_iris = TensorDataset(torch.tensor(iris.data),torch.tensor(iris.target))
+
+# 分割成训练集和预测集
+n_train = int(len(ds_iris)*0.8)
+n_valid = len(ds_iris) - n_train
+ds_train,ds_valid = random_split(ds_iris,[n_train,n_valid])
+
+print(type(ds_iris))
+print(type(ds_train))
+# 使用DataLoader加载数据集
+dl_train,dl_valid = DataLoader(ds_train,batch_size = 8),DataLoader(ds_valid,batch_size = 8)
+
+for features,labels in dl_train:
+    print(features,labels)
+    break
+# 演示加法运算符（`+`）的合并作用
+
+ds_data = ds_train + ds_valid
+
+print('len(ds_train) = ',len(ds_train))
+print('len(ds_valid) = ',len(ds_valid))
+print('len(ds_train+ds_valid) = ',len(ds_data))
+
+print(type(ds_data))
+```
+
+
+
+**2，根据图片目录创建图片数据集**
+
+```python
+import numpy as np 
+import torch 
+from torch.utils.data import DataLoader
+from torchvision import transforms,datasets 
+#演示一些常用的图片增强操作
+from PIL import Image
+img = Image.open('./data/cat.jpeg')
+# 随机数值翻转
+transforms.RandomVerticalFlip()(img)
+#随机旋转
+transforms.RandomRotation(45)(img)
+# 定义图片增强操作
+
+transform_train = transforms.Compose([
+   transforms.RandomHorizontalFlip(), #随机水平翻转
+   transforms.RandomVerticalFlip(), #随机垂直翻转
+   transforms.RandomRotation(45),  #随机在45度角度内旋转
+   transforms.ToTensor() #转换成张量
+  ]
+) 
+
+transform_valid = transforms.Compose([
+    transforms.ToTensor()
+  ]
+)
+# 根据图片目录创建数据集
+ds_train = datasets.ImageFolder("./data/cifar2/train/",
+            transform = transform_train,target_transform= lambda t:torch.tensor([t]).float())
+ds_valid = datasets.ImageFolder("./data/cifar2/test/",
+            transform = transform_train,target_transform= lambda t:torch.tensor([t]).float())
+print(ds_train.class_to_idx)
+# {'0_airplane': 0, '1_automobile': 1}
+
+# 使用DataLoader加载数据集
+dl_train = DataLoader(ds_train,batch_size = 50,shuffle = True,num_workers=3)
+dl_valid = DataLoader(ds_valid,batch_size = 50,shuffle = True,num_workers=3)
+for features,labels in dl_train:
+    print(features.shape)
+    print(labels.shape)
+    break
+# torch.Size([50, 3, 32, 32])
+# torch.Size([50, 1])
+```
+
+**3. 创建自定义数据集**
+
+下面通过继承Dataset类创建imdb文本分类任务的自定义数据集。
+
+大概思路如下：首先，对训练集文本分词构建词典。然后将训练集文本和测试集文本数据转换成token单词编码。
+
+接着将转换成单词编码的训练集数据和测试集数据按样本分割成多个文件，一个文件代表一个样本。
+
+最后，我们可以根据文件名列表获取对应序号的样本内容，从而构建Dataset数据集。
+
+```python
+import numpy as np 
+import pandas as pd 
+from collections import OrderedDict
+import re,string
+
+MAX_WORDS = 10000  # 仅考虑最高频的10000个词
+MAX_LEN = 200  # 每个样本保留200个词的长度
+BATCH_SIZE = 20 
+
+train_data_path = 'data/imdb/train.tsv'
+test_data_path = 'data/imdb/test.tsv'
+train_token_path = 'data/imdb/train_token.tsv'
+test_token_path =  'data/imdb/test_token.tsv'
+train_samples_path = 'data/imdb/train_samples/'
+test_samples_path =  'data/imdb/test_samples/'
+```
+
+首先我们构建词典，并保留最高频的MAX_WORDS个词。
+
+```python
+##构建词典
+
+word_count_dict = {}
+
+#清洗文本
+def clean_text(text):
+    lowercase = text.lower().replace("\n"," ")
+    stripped_html = re.sub('<br />', ' ',lowercase)
+    cleaned_punctuation = re.sub('[%s]'%re.escape(string.punctuation),'',stripped_html)
+    return cleaned_punctuation
+
+with open(train_data_path,"r",encoding = 'utf-8') as f:
+    for line in f:
+        label,text = line.split("\t")
+        cleaned_text = clean_text(text)
+        for word in cleaned_text.split(" "):
+            word_count_dict[word] = word_count_dict.get(word,0)+1 
+
+df_word_dict = pd.DataFrame(pd.Series(word_count_dict,name = "count"))
+df_word_dict = df_word_dict.sort_values(by = "count",ascending =False)
+
+df_word_dict = df_word_dict[0:MAX_WORDS-2] #  
+df_word_dict["word_id"] = range(2,MAX_WORDS) #编号0和1分别留给未知词<unkown>和填充<padding>
+
+word_id_dict = df_word_dict["word_id"].to_dict()
+
+df_word_dict.head(10)
+```
+
+[![img](https://github.com/lyhue1991/eat_pytorch_in_20_days/raw/master/data/5-1-%E8%AF%8D%E5%85%B8.png)](https://github.com/lyhue1991/eat_pytorch_in_20_days/blob/master/data/5-1-词典.png)
+
+然后我们利用构建好的词典，将文本转换成token序号。
+
+```python
+#转换token
+
+# 填充文本
+def pad(data_list,pad_length):
+    padded_list = data_list.copy()
+    if len(data_list)> pad_length:
+         padded_list = data_list[-pad_length:]
+    if len(data_list)< pad_length:
+         padded_list = [1]*(pad_length-len(data_list))+data_list
+    return padded_list
+
+def text_to_token(text_file,token_file):
+    with open(text_file,"r",encoding = 'utf-8') as fin,\
+      open(token_file,"w",encoding = 'utf-8') as fout:
+        for line in fin:
+            label,text = line.split("\t")
+            cleaned_text = clean_text(text)
+            word_token_list = [word_id_dict.get(word, 0) for word in cleaned_text.split(" ")]
+            pad_list = pad(word_token_list,MAX_LEN)
+            out_line = label+"\t"+" ".join([str(x) for x in pad_list])
+            fout.write(out_line+"\n")
+        
+text_to_token(train_data_path,train_token_path)
+text_to_token(test_data_path,test_token_path)
+```
+
+接着将token文本按照样本分割，每个文件存放一个样本的数据。
+
+```python
+# 分割样本
+import os
+
+if not os.path.exists(train_samples_path):
+    os.mkdir(train_samples_path)
+    
+if not os.path.exists(test_samples_path):
+    os.mkdir(test_samples_path)
+    
+    
+def split_samples(token_path,samples_dir):
+    with open(token_path,"r",encoding = 'utf-8') as fin:
+        i = 0
+        for line in fin:
+            with open(samples_dir+"%d.txt"%i,"w",encoding = "utf-8") as fout:
+                fout.write(line)
+            i = i+1
+
+split_samples(train_token_path,train_samples_path)
+split_samples(test_token_path,test_samples_path)
+print(os.listdir(train_samples_path)[0:100])
+#['11303.txt', '3644.txt', '19987.txt', '18441.txt', '5235.txt', '17772.txt', '1053.txt', '13514.txt', '8711.txt', '15165.txt', '7422.txt', '8077.txt', '15603.txt', '7344.txt', '1735.txt', '13272.txt', '9369.txt', '18327.txt', '5553.txt', '17014.txt', '4895.txt', '11465.txt', '3122.txt', '19039.txt', '5547.txt', '18333.txt', '17000.txt', '4881.txt', '2228.txt', '11471.txt', '3136.txt', '4659.txt', '15617.txt', '8063.txt', '7350.txt', '12178.txt', '1721.txt', '13266.txt', '14509.txt', '6728.txt', '1047.txt', '13500.txt', '15171.txt', '8705.txt', '7436.txt', '16478.txt', '11317.txt', '3650.txt', '19993.txt', '10009.txt', '5221.txt', '18455.txt', '17766.txt', '3888.txt', '6700.txt', '14247.txt', '9433.txt', '13528.txt', '12636.txt', '15159.txt', '16450.txt', '4117.txt', '19763.txt', '3678.txt', '17996.txt', '2566.txt', '10021.txt', '5209.txt', '17028.txt', '2200.txt', '10747.txt', '11459.txt', '16336.txt', '4671.txt', '19005.txt', '7378.txt', '12150.txt', '1709.txt', '6066.txt', '14521.txt', '9355.txt', '12144.txt', '289.txt', '6072.txt', '9341.txt', '14535.txt', '2214.txt', '10753.txt', '16322.txt', '19011.txt', '4665.txt', '16444.txt', '19777.txt', '4103.txt', '17982.txt', '2572.txt', '10035.txt', '18469.txt', '6714.txt', '9427.txt']
+```
+
+一切准备就绪，我们可以创建数据集Dataset, 从文件名称列表中读取文件内容了。
+
+```python
+import os
+class imdbDataset(Dataset):
+    def __init__(self,samples_dir):
+        self.samples_dir = samples_dir
+        self.samples_paths = os.listdir(samples_dir)
+    
+    def __len__(self):
+        return len(self.samples_paths)
+    
+    def __getitem__(self,index):
+        path = self.samples_dir + self.samples_paths[index]
+        with open(path,"r",encoding = "utf-8") as f:
+            line = f.readline()
+            label,tokens = line.split("\t")
+            label = torch.tensor([float(label)],dtype = torch.float)
+            feature = torch.tensor([int(x) for x in tokens.split(" ")],dtype = torch.long)
+            return  (feature,label)
+    
+ds_train = imdbDataset(train_samples_path)
+ds_test = imdbDataset(test_samples_path)
+print(len(ds_train))
+print(len(ds_test))
+#20000
+#5000
+dl_train = DataLoader(ds_train,batch_size = BATCH_SIZE,shuffle = True,num_workers=4)
+dl_test = DataLoader(ds_test,batch_size = BATCH_SIZE,num_workers=4)
+
+for features,labels in dl_train:
+    print(features)
+    print(labels)
+    break
+#tensor([[   1,    1,    1,  ...,   29,    8,    8],
+        [  13,   11,  247,  ...,    0,    0,    8],
+        [8587,  555,   12,  ...,    3,    0,    8],
+        ...,
+        [   1,    1,    1,  ...,    2,    0,    8],
+        [ 618,   62,   25,  ...,   20,  204,    8],
+        [   1,    1,    1,  ...,   71,   85,    8]])
+#tensor([[1.],
+        [0.],
+        [0.],
+        [1.],
+        [0.],
+        [1.],
+        [0.],
+        [1.],
+        [1.],
+        [1.],
+        [0.],
+        [0.],
+        [0.],
+        [1.],
+        [0.],
+        [1.],
+        [1.],
+        [1.],
+        [0.],
+        [1.]])
+```
+
+最后构建模型测试一下数据集管道是否可用。
+
+```python
+import torch
+from torch import nn 
+import importlib 
+from torchkeras import Model,summary
+
+class Net(Model):
+    
+    def __init__(self):
+        super(Net, self).__init__()
+        
+        #设置padding_idx参数后将在训练过程中将填充的token始终赋值为0向量
+        self.embedding = nn.Embedding(num_embeddings = MAX_WORDS,embedding_dim = 3,padding_idx = 1)
+        self.conv = nn.Sequential()
+        self.conv.add_module("conv_1",nn.Conv1d(in_channels = 3,out_channels = 16,kernel_size = 5))
+        self.conv.add_module("pool_1",nn.MaxPool1d(kernel_size = 2))
+        self.conv.add_module("relu_1",nn.ReLU())
+        self.conv.add_module("conv_2",nn.Conv1d(in_channels = 16,out_channels = 128,kernel_size = 2))
+        self.conv.add_module("pool_2",nn.MaxPool1d(kernel_size = 2))
+        self.conv.add_module("relu_2",nn.ReLU())
+        
+        self.dense = nn.Sequential()
+        self.dense.add_module("flatten",nn.Flatten())
+        self.dense.add_module("linear",nn.Linear(6144,1))
+        self.dense.add_module("sigmoid",nn.Sigmoid())
+        
+    def forward(self,x):
+        x = self.embedding(x).transpose(1,2)
+        x = self.conv(x)
+        y = self.dense(x)
+        return y
+        
+model = Net()
+print(model)
+
+model.summary(input_shape = (200,),input_dtype = torch.LongTensor)
+#Net(
+  (embedding): Embedding(10000, 3, padding_idx=1)
+  (conv): Sequential(
+    (conv_1): Conv1d(3, 16, kernel_size=(5,), stride=(1,))
+    (pool_1): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (relu_1): ReLU()
+    (conv_2): Conv1d(16, 128, kernel_size=(2,), stride=(1,))
+    (pool_2): MaxPool1d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (relu_2): ReLU()
+  )
+  (dense): Sequential(
+    (flatten): Flatten()
+    (linear): Linear(in_features=6144, out_features=1, bias=True)
+    (sigmoid): Sigmoid()
+  )
+)
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+         Embedding-1               [-1, 200, 3]          30,000
+            Conv1d-2              [-1, 16, 196]             256
+         MaxPool1d-3               [-1, 16, 98]               0
+              ReLU-4               [-1, 16, 98]               0
+            Conv1d-5              [-1, 128, 97]           4,224
+         MaxPool1d-6              [-1, 128, 48]               0
+              ReLU-7              [-1, 128, 48]               0
+           Flatten-8                 [-1, 6144]               0
+            Linear-9                    [-1, 1]           6,145
+          Sigmoid-10                    [-1, 1]               0
+================================================================
+Total params: 40,625
+Trainable params: 40,625
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.000763
+Forward/backward pass size (MB): 0.287796
+Params size (MB): 0.154972
+Estimated Total Size (MB): 0.443531
+----------------------------------------------------------------
+# 编译模型
+def accuracy(y_pred,y_true):
+    y_pred = torch.where(y_pred>0.5,torch.ones_like(y_pred,dtype = torch.float32),
+                      torch.zeros_like(y_pred,dtype = torch.float32))
+    acc = torch.mean(1-torch.abs(y_true-y_pred))
+    return acc
+
+model.compile(loss_func = nn.BCELoss(),optimizer= torch.optim.Adagrad(model.parameters(),lr = 0.02),
+             metrics_dict={"accuracy":accuracy})
+# 训练模型
+dfhistory = model.fit(10,dl_train,dl_val=dl_test,log_step_freq= 200)
+Start Training ...
+
+================================================================================2020-07-11 23:21:53
+{'step': 200, 'loss': 0.956, 'accuracy': 0.521}
+{'step': 400, 'loss': 0.823, 'accuracy': 0.53}
+{'step': 600, 'loss': 0.774, 'accuracy': 0.545}
+{'step': 800, 'loss': 0.747, 'accuracy': 0.56}
+{'step': 1000, 'loss': 0.726, 'accuracy': 0.572}
+
+ +-------+-------+----------+----------+--------------+
+| epoch |  loss | accuracy | val_loss | val_accuracy |
++-------+-------+----------+----------+--------------+
+|   1   | 0.726 |  0.572   |  0.661   |    0.613     |
++-------+-------+----------+----------+--------------+
+
+================================================================================2020-07-11 23:22:20
+{'step': 200, 'loss': 0.605, 'accuracy': 0.668}
+{'step': 400, 'loss': 0.602, 'accuracy': 0.674}
+{'step': 600, 'loss': 0.592, 'accuracy': 0.681}
+{'step': 800, 'loss': 0.584, 'accuracy': 0.687}
+{'step': 1000, 'loss': 0.575, 'accuracy': 0.696}
+
+ +-------+-------+----------+----------+--------------+
+| epoch |  loss | accuracy | val_loss | val_accuracy |
++-------+-------+----------+----------+--------------+
+|   2   | 0.575 |  0.696   |  0.553   |    0.716     |
++-------+-------+----------+----------+--------------+
+
+================================================================================2020-07-11 23:25:53
+{'step': 200, 'loss': 0.294, 'accuracy': 0.877}
+{'step': 400, 'loss': 0.299, 'accuracy': 0.875}
+{'step': 600, 'loss': 0.298, 'accuracy': 0.875}
+{'step': 800, 'loss': 0.296, 'accuracy': 0.876}
+{'step': 1000, 'loss': 0.298, 'accuracy': 0.875}
+
+ +-------+-------+----------+----------+--------------+
+| epoch |  loss | accuracy | val_loss | val_accuracy |
++-------+-------+----------+----------+--------------+
+|   10  | 0.298 |  0.875   |  0.464   |    0.795     |
++-------+-------+----------+----------+--------------+
+
+================================================================================2020-07-11 23:26:19
+Finished Training...
+```
+
+
+
+### DataLoader加载数据集
+
+DataLoader能够控制batch的大小，batch中元素的采样方法，以及将batch结果整理成模型所需输入形式的方法，并且能够使用多进程读取数据。
+
+DataLoader的函数签名如下。
+
+```python
+DataLoader(
+    dataset,
+    batch_size=1,
+    shuffle=False,
+    sampler=None,
+    batch_sampler=None,
+    num_workers=0,
+    collate_fn=None,
+    pin_memory=False,
+    drop_last=False,
+    timeout=0,
+    worker_init_fn=None,
+    multiprocessing_context=None,
+)
+```
+
+一般情况下，我们仅仅会配置 `dataset, batch_size, shuffle, num_workers, drop_last` 这五个参数，其他参数使用默认值即可。
+
+DataLoader除了可以加载我们前面讲的 `torch.utils.data.Dataset` 外，还能够加载另外一种数据集 `torch.utils.data.IterableDataset`。
+
+和Dataset数据集相当于一种列表结构不同，IterableDataset 相当于一种迭代器结构。 它更加复杂，一般较少使用。
+
+- dataset : 数据集
+- batch_size: 批次大小
+- shuffle: 是否乱序
+- sampler: 样本采样函数，一般无需设置。
+- batch_sampler: 批次采样函数，一般无需设置。
+- num_workers: 使用多进程读取数据，设置的进程数。
+- collate_fn: 整理一个批次数据的函数。
+- pin_memory: 是否设置为锁业内存。默认为False，锁业内存不会使用虚拟内存(硬盘)，从锁业内存拷贝到GPU上速度会更快。
+- drop_last: 是否丢弃最后一个样本数量不足batch_size批次数据。
+- timeout: 加载一个数据批次的最长等待时间，一般无需设置。
+- worker_init_fn: 每个worker中dataset的初始化函数，常用于 IterableDataset。一般不使用。
+
+```python
+#构建输入数据管道
+ds = TensorDataset(torch.arange(1,50))
+dl = DataLoader(ds,
+                batch_size = 10,
+                shuffle= True,
+                num_workers=2,
+                drop_last = True)
+#迭代数据
+for batch, in dl:
+    print(batch)
+#tensor([43, 44, 21, 36,  9,  5, 28, 16, 20, 14])
+#tensor([23, 49, 35, 38,  2, 34, 45, 18, 15, 40])
+#tensor([26,  6, 27, 39,  8,  4, 24, 19, 32, 17])
+#tensor([ 1, 29, 11, 47, 12, 22, 48, 42, 10,  7])
+```
+
+
+
+------
+
+## 模型层
+
+深度学习模型一般由各种模型层组合而成。
+
+`torch.nn` 中内置了非常丰富的各种模型层。它们都属于 `nn.Module` 的子类，具备参数管理功能。
+
+例如：
+
+- nn.Linear, nn.Flatten, nn.Dropout, nn.BatchNorm2d
+- nn.Conv2d,nn.AvgPool2d,nn.Conv1d,nn.ConvTranspose2d
+- nn.Embedding,nn.GRU,nn.LSTM
+- nn.Transformer
+
+如果这些内置模型层不能够满足需求，我们也可以通过继承 `nn.Module` 基类构建自定义的模型层。
+
+实际上，pytorch不区分模型和模型层，都是通过继承 `nn.Module` 进行构建。
+
+因此，我们只要继承 `nn.Module` 基类并实现 forward 方法即可自定义模型层。
+
+### 内置模型层
+
+```python
+import numpy as np 
+import torch 
+from torch import nn 
+```
+
+一些常用的内置模型层简单介绍如下。
+
+**基础层**
+
+- nn.Linear：全连接层。参数个数 = 输入层特征数× 输出层特征数(weight)＋ 输出层特征数(bias)
+- nn.Flatten：压平层，用于将多维张量样本压成一维张量样本。
+- nn.BatchNorm1d：一维批标准化层。通过线性变换将输入批次缩放平移到稳定的均值和标准差。可以增强模型对输入不同分布的适应性，加快模型训练速度，有轻微正则化效果。一般在激活函数之前使用。可以用afine参数设置该层是否含有可以训练的参数。
+- nn.BatchNorm2d：二维批标准化层。
+- nn.BatchNorm3d：三维批标准化层。
+- nn.Dropout：一维随机丢弃层。一种正则化手段。
+- nn.Dropout2d：二维随机丢弃层。
+- nn.Dropout3d：三维随机丢弃层。
+- nn.Threshold：限幅层。当输入大于或小于阈值范围时，截断之。
+- nn.ConstantPad2d： 二维常数填充层。对二维张量样本填充常数扩展长度。
+- nn.ReplicationPad1d： 一维复制填充层。对一维张量样本通过复制边缘值填充扩展长度。
+- nn.ZeroPad2d：二维零值填充层。对二维张量样本在边缘填充0值.
+- nn.GroupNorm：组归一化。一种替代批归一化的方法，将通道分成若干组进行归一。不受batch大小限制，据称性能和效果都优于BatchNorm。
+- nn.LayerNorm：层归一化。较少使用。
+- nn.InstanceNorm2d: 样本归一化。较少使用。
+
+各种归一化技术参考如下知乎文章 [FAIR何恺明等人提出组归一化：替代批归一化，不受批量大小限制](https://zhuanlan.zhihu.com/p/34858971)
+
+
+
+**卷积网络相关层**
+
+- nn.Conv1d：普通一维卷积，常用于文本。参数个数 = 输入通道数×卷积核尺寸(如3)×卷积核个数 + 卷积核尺寸(如3）
+- nn.Conv2d：普通二维卷积，常用于图像。参数个数 = 输入通道数×卷积核尺寸(如3乘3)×卷积核个数 + 卷积核尺寸(如3乘3) 通过调整dilation参数大于1，可以变成空洞卷积，增大卷积核感受野。 通过调整groups参数不为1，可以变成分组卷积。分组卷积中不同分组使用相同的卷积核，显著减少参数数量。 当groups参数等于通道数时，相当于tensorflow中的二维深度卷积层tf.keras.layers.DepthwiseConv2D。 利用分组卷积和1乘1卷积的组合操作，可以构造相当于Keras中的二维深度可分离卷积层tf.keras.layers.SeparableConv2D。
+- nn.Conv3d：普通三维卷积，常用于视频。参数个数 = 输入通道数×卷积核尺寸(如3乘3乘3)×卷积核个数 + 卷积核尺寸(如3乘3乘3) 。
+- nn.MaxPool1d: 一维最大池化。
+- nn.MaxPool2d：二维最大池化。一种下采样方式。没有需要训练的参数。
+- nn.MaxPool3d：三维最大池化。
+- nn.AdaptiveMaxPool2d：二维自适应最大池化。无论输入图像的尺寸如何变化，输出的图像尺寸是固定的。 该函数的实现原理，大概是通过输入图像的尺寸和要得到的输出图像的尺寸来反向推算池化算子的padding,stride等参数。
+- nn.FractionalMaxPool2d：二维分数最大池化。普通最大池化通常输入尺寸是输出的整数倍。而分数最大池化则可以不必是整数。分数最大池化使用了一些随机采样策略，有一定的正则效果，可以用它来代替普通最大池化和Dropout层。
+- nn.AvgPool2d：二维平均池化。
+- nn.AdaptiveAvgPool2d：二维自适应平均池化。无论输入的维度如何变化，输出的维度是固定的。
+- nn.ConvTranspose2d：二维卷积转置层，俗称反卷积层。并非卷积的逆操作，但在卷积核相同的情况下，当其输入尺寸是卷积操作输出尺寸的情况下，卷积转置的输出尺寸恰好是卷积操作的输入尺寸。在语义分割中可用于上采样。
+- nn.Upsample：上采样层，操作效果和池化相反。可以通过mode参数控制上采样策略为"nearest"最邻近策略或"linear"线性插值策略。
+- nn.Unfold：滑动窗口提取层。其参数和卷积操作nn.Conv2d相同。实际上，卷积操作可以等价于nn.Unfold和nn.Linear以及nn.Fold的一个组合。 其中nn.Unfold操作可以从输入中提取各个滑动窗口的数值矩阵，并将其压平成一维。利用nn.Linear将nn.Unfold的输出和卷积核做乘法后，再使用 nn.Fold操作将结果转换成输出图片形状。
+- nn.Fold：逆滑动窗口提取层。
+
+
+
+**循环网络相关层**
+
+- nn.Embedding：嵌入层。一种比Onehot更加有效的对离散特征进行编码的方法。一般用于将输入中的单词映射为稠密向量。嵌入层的参数需要学习。
+- nn.LSTM：长短记忆循环网络层【支持多层】。最普遍使用的循环网络层。具有携带轨道，遗忘门，更新门，输出门。可以较为有效地缓解梯度消失问题，从而能够适用长期依赖问题。设置bidirectional = True时可以得到双向LSTM。需要注意的时，默认的输入和输出形状是(seq,batch,feature), 如果需要将batch维度放在第0维，则要设置batch_first参数设置为True。
+- nn.GRU：门控循环网络层【支持多层】。LSTM的低配版，不具有携带轨道，参数数量少于LSTM，训练速度更快。
+- nn.RNN：简单循环网络层【支持多层】。容易存在梯度消失，不能够适用长期依赖问题。一般较少使用。
+- nn.LSTMCell：长短记忆循环网络单元。和nn.LSTM在整个序列上迭代相比，它仅在序列上迭代一步。一般较少使用。
+- nn.GRUCell：门控循环网络单元。和nn.GRU在整个序列上迭代相比，它仅在序列上迭代一步。一般较少使用。
+- nn.RNNCell：简单循环网络单元。和nn.RNN在整个序列上迭代相比，它仅在序列上迭代一步。一般较少使用。
+
+
+
+**Transformer相关层**
+
+- nn.Transformer：Transformer网络结构。Transformer网络结构是替代循环网络的一种结构，解决了循环网络难以并行，难以捕捉长期依赖的缺陷。它是目前NLP任务的主流模型的主要构成部分。Transformer网络结构由TransformerEncoder编码器和TransformerDecoder解码器组成。编码器和解码器的核心是MultiheadAttention多头注意力层。
+- nn.TransformerEncoder：Transformer编码器结构。由多个 nn.TransformerEncoderLayer编码器层组成。
+- nn.TransformerDecoder：Transformer解码器结构。由多个 nn.TransformerDecoderLayer解码器层组成。
+- nn.TransformerEncoderLayer：Transformer的编码器层。
+- nn.TransformerDecoderLayer：Transformer的解码器层。
+- nn.MultiheadAttention：多头注意力层。
+
+Transformer原理介绍可以参考如下知乎文章 [详解Transformer(Attention Is All You Need)](https://zhuanlan.zhihu.com/p/48508221)
+
+
+
+### 自定义模型层
+
+如果Pytorch的内置模型层不能够满足需求，我们也可以通过继承 `nn.Module` 基类构建自定义的模型层。
+
+实际上，pytorch不区分模型和模型层，都是通过继承 `nn.Module` 进行构建。
+
+因此，我们只要继承 `nn.Module` 基类并实现 forward 方法即可自定义模型层。
+
+下面是Pytorch的 `nn.Linear` 层的源码，我们可以仿照它来自定义模型层。
+
+```python
+import torch
+from torch import nn
+import torch.nn.functional as F
+
+
+class Linear(nn.Module):
+    __constants__ = ['in_features', 'out_features']
+
+    def __init__(self, in_features, out_features, bias=True):
+        super(Linear, self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = nn.Parameter(torch.Tensor(out_features, in_features))
+        if bias:
+            self.bias = nn.Parameter(torch.Tensor(out_features))
+        else:
+            self.register_parameter('bias', None)
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        nn.init.kaiming_uniform_(self.weight, a=math.sqrt(5))
+        if self.bias is not None:
+            fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.weight)
+            bound = 1 / math.sqrt(fan_in)
+            nn.init.uniform_(self.bias, -bound, bound)
+
+    def forward(self, input):
+        return F.linear(input, self.weight, self.bias)
+
+    def extra_repr(self):
+        return 'in_features={}, out_features={}, bias={}'.format(
+            self.in_features, self.out_features, self.bias is not None
+        )
+linear = nn.Linear(20, 30)
+inputs = torch.randn(128, 20)
+output = linear(inputs)
+print(output.size())
+# torch.Size([128, 30])
+```
+
+
+
+
+
+
+
+
+---
+
 ## 类型转换
 
 
@@ -780,9 +1864,9 @@ sub_va = tensor2var(sub_ts)
 - [详解Pytorch 自动微分里的（vector-Jacobian product）](https://zhuanlan.zhihu.com/p/65609544)
 - [PyTorch 中 backward() 详解](https://www.pytorchtutorial.com/pytorch-backward/)
 
-​
 
-​
+
+
 
 
 ---
@@ -1481,7 +2565,7 @@ float16和float相比恰里，总结下来就是两个原因：**内存占用更
 - **计算更快**： 
    - 目前的不少GPU都有针对 fp16 的计算进行优化。论文指出：在近期的GPU中，半精度的计算吞吐量可以是单精度的 2-8 倍；从下图我们可以看到混合精度训练几乎没有性能损失。
 
-​
+
 
 ![apex_fig1.png](https://cdn.nlark.com/yuque/0/2021/png/308996/1621060556235-cf8ab5a3-7339-4968-9e1a-e1a3c3360b85.png#clientId=uf4d31bb9-dd4d-4&crop=0&crop=0&crop=1&crop=1&from=ui&id=u1f3ea558&margin=%5Bobject%20Object%5D&name=apex_fig1.png&originHeight=234&originWidth=720&originalType=binary&ratio=1&rotation=0&showTitle=false&size=48566&status=done&style=none&taskId=u2fd123ab-b5ed-4c49-80e8-0bae29b498e&title=)
 
@@ -1651,14 +2735,14 @@ PyTorch 提速，包括 dataloader 的提速；
 - Linux上将预处理搬到GPU上加速: 
    - `NVIDIA/DALI` :[https://github.com/NVIDIA/DALI](https://github.com/NVIDIA/DALI)
 
- 
+
 ### IO提速
 
 
 - 推荐大家关注下mmcv，其对数据的读取提供了比较高效且全面的支持： 
    - OpenMMLab：MMCV 核心组件分析(三): FileClient [https://zhuanlan.zhihu.com/p/339190576](https://zhuanlan.zhihu.com/p/339190576)
 
- 
+
 #### 使用更快的图片处理
 
 
@@ -1681,14 +2765,14 @@ PyTorch 提速，包括 dataloader 的提速；
    - [https://blog.csdn.net/P_LarT/article/details/103208405](https://blog.csdn.net/P_LarT/article/details/103208405)
    - [https://github.com/lartpang/PySODToolBox/blob/master/ForBigDataset/ImageFolder2LMDB.py](https://github.com/lartpang/PySODToolBox/blob/master/ForBigDataset/ImageFolder2LMDB.py)
 
- 
+
 #### 预读取数据
 
 
 - 预读取下一次迭代需要的数据
 - 设置 **num_worker: **DataLoader  的 num_worker 如果设置太小，则起不到多线程提速的作用，如果设置太大，则会造成线程阻塞或者爆内存，导致训练变慢或者程序崩溃，**可以考虑数量是 cpu 的核心数或者 gpu 的数量比较合适**。
 
-​
+
 
 【参考】
 
@@ -1840,6 +2924,7 @@ while batch is not None:
          - PyTorch的文档：[https://pytorch.org/docs/stable/notes/amp_examples.html>](https://pytorch.org/docs/stable/notes/amp_examples.html%3E)
 
  
+
 ### 代码层面
 
 
@@ -1920,7 +3005,7 @@ while batch is not None:
 - ACNet、RepVGG这种设计策略也很有意思 
    - RepVGG|让你的ConVNet一卷到底，plain网络首次超过80%top1精度：[https://mp.weixin.qq.com/s/M4Kspm6hO3W8fXT_JqoEhA](https://mp.weixin.qq.com/s/M4Kspm6hO3W8fXT_JqoEhA)
 
- 
+
 ### 时间分析
 
 
@@ -1937,7 +3022,7 @@ while batch is not None:
    - 分组卷积结构
    - 针对特征二值量化的BN融合
 
- 
+
 ### 扩展阅读
 
 
@@ -2012,7 +3097,7 @@ model.apply(inplace_relu)
 - `torch.cuda.amp`: 
    - PyTorch的文档：[https://pytorch.org/docs/stable/notes/amp_examples.html](https://pytorch.org/docs/stable/notes/amp_examples.html)
 
- 
+
 ### 对不需要反向传播的操作进行管理
 
 
@@ -2161,5 +3246,4 @@ seed_torch()
 [
 
 ](https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/linux-64/)
-
 
