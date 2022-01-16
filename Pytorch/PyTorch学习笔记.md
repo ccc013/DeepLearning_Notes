@@ -1787,6 +1787,650 @@ print(output.size())
 # torch.Size([128, 30])
 ```
 
+---
+
+## 损失函数
+
+一般来说，监督学习的目标函数由损失函数和正则化项组成。(Objective = Loss + Regularization)。Pytorch中的损失函数一般在训练模型时候指定。
+
+
+
+**和 Tensorflow 的区别**：
+
+注意Pytorch中内置的损失函数的参数和tensorflow不同，是`y_pred`在前，`y_true`在后，而Tensorflow是y_true在前，y_pred在后。
+
+**对于不同模型，损失函数也有不同**：
+
+- 对于回归模型，通常使用的内置损失函数是均方损失函数 `nn.MSELoss` 。
+- 对于二分类模型，通常使用的是二元交叉熵损失函数`nn.BCELoss` (输入已经是`sigmoid`激活函数之后的结果) 或者 `nn.BCEWithLogitsLoss` (输入尚未经过`nn.Sigmoid`激活函数) 。
+
+- 对于多分类模型，一般推荐使用交叉熵损失函数 `nn.CrossEntropyLoss`(y_true需要是一维的，是类别编码。`y_pred` 未经过`nn.Softmax`激活)。此外，如果多分类的 `y_pred`经过了`nn.LogSoftmax`激活，可以使用`nn.NLLLoss`损失函数(The negative log likelihood loss)。 这种方法和直接使用`nn.CrossEntropyLoss`等价。
+- 如果有需要，也可以自定义损失函数，自定义损失函数需要接收两个张量 `y_pred，y_true`作为输入参数，并输出一个标量作为损失函数值。
+
+Pytorch中的正则化项一般通过自定义的方式和损失函数一起添加作为目标函数。如果仅仅使用L2正则化，也可以利用优化器的`weight_decay`参数来实现相同的效果。
+
+
+
+### 内置损失函数
+
+```python
+import numpy as np
+import pandas as pd
+import torch 
+from torch import nn 
+import torch.nn.functional as F 
+
+
+y_pred = torch.tensor([[10.0,0.0,-10.0],[8.0,8.0,8.0]])
+y_true = torch.tensor([0,2])
+
+# 直接调用交叉熵损失
+ce = nn.CrossEntropyLoss()(y_pred,y_true)
+print(ce)
+
+# 等价于先计算nn.LogSoftmax激活，再调用NLLLoss
+y_pred_logsoftmax = nn.LogSoftmax(dim = 1)(y_pred)
+nll = nn.NLLLoss()(y_pred_logsoftmax,y_true)
+print(nll)
+
+#tensor(0.5493)
+#tensor(0.5493)
+```
+
+内置损失函数有两种实现形式：
+
+1. **类**：比如二元交叉熵损失函数的类的表现形式：`nn.BCE`
+2. **函数**：比如二元交叉熵损失函数的函数的表现形式： `F.binary_cross_entropy`
+
+不过类的实现一般都是通过调用函数的实现形式然后通过`nn.Module`封装得到的，所以常用的也是类的形式，它们主要是封装在 `torch.nn`模块下，并且类名以 Loss 结尾。
+
+常用的内置函数如下：
+
+- `nn.MSELoss`（均方误差损失，也叫做L2损失，用于回归）
+- `nn.L1Loss` （L1损失，也叫做绝对值误差损失，用于回归）
+
+- `nn.SmoothL1Loss` (平滑L1损失，当输入在-1到1之间时，平滑为L2损失，用于回归)
+- `nn.BCELoss` (二元交叉熵，用于二分类，输入已经过nn.Sigmoid激活，对不平衡数据集可以用weigths参数调整类别权重)
+
+- `nn.BCEWithLogitsLoss` (二元交叉熵，用于二分类，输入未经过nn.Sigmoid激活)
+- `nn.CrossEntropyLoss` (交叉熵，用于多分类，要求label为稀疏编码，输入未经过nn.Softmax激活，对不平衡数据集可以用weigths参数调整类别权重)
+
+- `nn.NLLLoss` (负对数似然损失，用于多分类，要求label为稀疏编码，输入经过nn.LogSoftmax激活)
+- `nn.CosineSimilarity`(余弦相似度，可用于多分类)
+
+- `nn.AdaptiveLogSoftmaxWithLoss` (一种适合非常多类别且类别分布很不均衡的损失函数，会自适应地将多个小类别合成一个cluster)
+
+更多损失函数的介绍参考：[PyTorch的十八个损失函数](https://zhuanlan.zhihu.com/p/61379965)
+
+
+### 自定义损失函数
+
+自定义损失函数也可以分为实现函数或者类两种方法：
+
+- 函数：接收两个张量y_pred,y_true作为输入参数，并输出一个标量作为损失函数值
+- 类：可以对`nn.Module`进行子类化，重写`forward`方法实现损失的计算逻辑，从而得到损失函数的类的实现
+
+下面是一个Focal Loss的自定义实现示范。Focal Loss是一种对binary_crossentropy的改进损失函数形式:
+
+1. 它在样本不均衡和存在较多易分类的样本时相比binary_crossentropy具有明显的优势。
+2. 它有两个可调参数，alpha参数和gamma参数。其中alpha参数主要用于衰减负样本的权重，gamma参数主要用于衰减容易训练样本的权重。从而让模型更加聚焦在正样本和困难样本上。这就是为什么这个损失函数叫做Focal Loss。
+
+详见《[5分钟理解Focal Loss与GHM——解决样本不平衡利器](https://zhuanlan.zhihu.com/p/80594704)》
+
+$$
+focal_loss(y,p) = \begin{cases} -\alpha (1-p)^{\gamma}\log(p) & \text{if y = 1}\ -(1-\alpha) p^{\gamma}\log(1-p) & \text{if y = 0} \end{cases} 
+$$
+
+
+```python
+class FocalLoss(nn.Module):
+    
+    def __init__(self,gamma=2.0,alpha=0.75):
+        super().__init__()
+        self.gamma = gamma
+        self.alpha = alpha
+
+    def forward(self,y_pred,y_true):
+        bce = torch.nn.BCELoss(reduction = "none")(y_pred,y_true)
+        p_t = (y_true * y_pred) + ((1 - y_true) * (1 - y_pred))
+        alpha_factor = y_true * self.alpha + (1 - y_true) * (1 - self.alpha)
+        modulating_factor = torch.pow(1.0 - p_t, self.gamma)
+        loss = torch.mean(alpha_factor * modulating_factor * bce)
+        return loss
+    
+#困难样本
+y_pred_hard = torch.tensor([[0.5],[0.5]])
+y_true_hard = torch.tensor([[1.0],[0.0]])
+
+#容易样本
+y_pred_easy = torch.tensor([[0.9],[0.1]])
+y_true_easy = torch.tensor([[1.0],[0.0]])
+
+focal_loss = FocalLoss()
+bce_loss = nn.BCELoss()
+
+print("focal_loss(hard samples):", focal_loss(y_pred_hard,y_true_hard))
+print("bce_loss(hard samples):", bce_loss(y_pred_hard,y_true_hard))
+print("focal_loss(easy samples):", focal_loss(y_pred_easy,y_true_easy))
+print("bce_loss(easy samples):", bce_loss(y_pred_easy,y_true_easy))
+
+#可见 focal_loss让容易样本的权重衰减到原来的 0.0005/0.1054 = 0.00474
+#而让困难样本的权重只衰减到原来的 0.0866/0.6931=0.12496
+
+# 因此相对而言，focal_loss可以衰减容易样本的权重。
+
+focal_loss(hard samples): tensor(0.0866)
+bce_loss(hard samples): tensor(0.6931)
+focal_loss(easy samples): tensor(0.0005)
+bce_loss(easy samples): tensor(0.1054)
+```
+
+### 自定义 L1 和 L2 正则化
+
+通常认为L1 正则化可以产生稀疏权值矩阵，即产生一个稀疏模型，可以用于特征选择。
+
+而L2 正则化可以防止模型过拟合（overfitting）。一定程度上，L1也可以防止过拟合。
+
+下面以一个二分类问题为例，演示给模型的目标函数添加自定义L1和L2正则化项的方法。
+
+这个范例同时演示了上一个部分的FocalLoss的使用。
+
+#### 准备数据
+
+```python
+import numpy as np 
+import pandas as pd 
+from matplotlib import pyplot as plt
+import torch
+from torch import nn
+import torch.nn.functional as F
+from torch.utils.data import Dataset,DataLoader,TensorDataset
+import torchkeras 
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+#正负样本数量
+n_positive,n_negative = 200,6000
+
+#生成正样本, 小圆环分布
+r_p = 5.0 + torch.normal(0.0,1.0,size = [n_positive,1]) 
+theta_p = 2*np.pi*torch.rand([n_positive,1])
+Xp = torch.cat([r_p*torch.cos(theta_p),r_p*torch.sin(theta_p)],axis = 1)
+Yp = torch.ones_like(r_p)
+
+#生成负样本, 大圆环分布
+r_n = 8.0 + torch.normal(0.0,1.0,size = [n_negative,1]) 
+theta_n = 2*np.pi*torch.rand([n_negative,1])
+Xn = torch.cat([r_n*torch.cos(theta_n),r_n*torch.sin(theta_n)],axis = 1)
+Yn = torch.zeros_like(r_n)
+
+#汇总样本
+X = torch.cat([Xp,Xn],axis = 0)
+Y = torch.cat([Yp,Yn],axis = 0)
+
+
+#可视化
+plt.figure(figsize = (6,6))
+plt.scatter(Xp[:,0],Xp[:,1],c = "r")
+plt.scatter(Xn[:,0],Xn[:,1],c = "g")
+plt.legend(["positive","negative"]);
+
+ds = TensorDataset(X,Y)
+
+ds_train,ds_valid = torch.utils.data.random_split(ds,[int(len(ds)*0.7),len(ds)-int(len(ds)*0.7)])
+dl_train = DataLoader(ds_train,batch_size = 100,shuffle=True,num_workers=2)
+dl_valid = DataLoader(ds_valid,batch_size = 100,num_workers=2)
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2022/png/308996/1642315565249-408c2608-fdff-4d87-9b17-b631fb5b6425.png" alt="img" style="zoom:50%;" />
+
+#### 定义模型
+
+```python
+class DNNModel(torchkeras.Model):
+    def __init__(self):
+        super(DNNModel, self).__init__()
+        self.fc1 = nn.Linear(2,4)
+        self.fc2 = nn.Linear(4,8) 
+        self.fc3 = nn.Linear(8,1)
+        
+    def forward(self,x):
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        y = nn.Sigmoid()(self.fc3(x))
+        return y
+        
+model = DNNModel()
+
+model.summary(input_shape =(2,))
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Linear-1                    [-1, 4]              12
+            Linear-2                    [-1, 8]              40
+            Linear-3                    [-1, 1]               9
+================================================================
+Total params: 61
+Trainable params: 61
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.000008
+Forward/backward pass size (MB): 0.000099
+Params size (MB): 0.000233
+Estimated Total Size (MB): 0.000340
+----------------------------------------------------------------
+```
+
+
+
+#### 训练模型
+
+```python
+# 准确率
+def accuracy(y_pred,y_true):
+    y_pred = torch.where(y_pred>0.5,torch.ones_like(y_pred,dtype = torch.float32),
+                      torch.zeros_like(y_pred,dtype = torch.float32))
+    acc = torch.mean(1-torch.abs(y_true-y_pred))
+    return acc
+
+# L2正则化
+def L2Loss(model,alpha):
+    l2_loss = torch.tensor(0.0, requires_grad=True)
+    for name, param in model.named_parameters():
+        if 'bias' not in name: #一般不对偏置项使用正则
+            l2_loss = l2_loss + (0.5 * alpha * torch.sum(torch.pow(param, 2)))
+    return l2_loss
+
+# L1正则化
+def L1Loss(model,beta):
+    l1_loss = torch.tensor(0.0, requires_grad=True)
+    for name, param in model.named_parameters():
+        if 'bias' not in name:
+            l1_loss = l1_loss +  beta * torch.sum(torch.abs(param))
+    return l1_loss
+
+# 将L2正则和L1正则添加到FocalLoss损失，一起作为目标函数
+def focal_loss_with_regularization(y_pred,y_true):
+    focal = FocalLoss()(y_pred,y_true) 
+    l2_loss = L2Loss(model,0.001) #注意设置正则化项系数
+    l1_loss = L1Loss(model,0.001)
+    total_loss = focal + l2_loss + l1_loss
+    return total_loss
+
+model.compile(loss_func =focal_loss_with_regularization,
+              optimizer= torch.optim.Adam(model.parameters(),lr = 0.01),
+             metrics_dict={"accuracy":accuracy})
+
+dfhistory = model.fit(30,dl_train = dl_train,dl_val = dl_valid,log_step_freq = 30)
+Start Training ...
+
+================================================================================2020-07-11 23:34:17
+{'step': 30, 'loss': 0.021, 'accuracy': 0.972}
+
+ +-------+-------+----------+----------+--------------+
+| epoch |  loss | accuracy | val_loss | val_accuracy |
++-------+-------+----------+----------+--------------+
+|   1   | 0.022 |  0.971   |  0.025   |     0.96     |
++-------+-------+----------+----------+--------------+
+
+================================================================================2020-07-11 23:34:27
+{'step': 30, 'loss': 0.016, 'accuracy': 0.984}
+
+ +-------+-------+----------+----------+--------------+
+| epoch |  loss | accuracy | val_loss | val_accuracy |
++-------+-------+----------+----------+--------------+
+|   30  | 0.016 |  0.981   |  0.017   |    0.983     |
++-------+-------+----------+----------+--------------+
+
+================================================================================2020-07-11 23:34:27
+Finished Training...
+# 结果可视化
+fig, (ax1,ax2) = plt.subplots(nrows=1,ncols=2,figsize = (12,5))
+ax1.scatter(Xp[:,0],Xp[:,1], c="r")
+ax1.scatter(Xn[:,0],Xn[:,1],c = "g")
+ax1.legend(["positive","negative"]);
+ax1.set_title("y_true");
+
+Xp_pred = X[torch.squeeze(model.forward(X)>=0.5)]
+Xn_pred = X[torch.squeeze(model.forward(X)<0.5)]
+
+ax2.scatter(Xp_pred[:,0],Xp_pred[:,1],c = "r")
+ax2.scatter(Xn_pred[:,0],Xn_pred[:,1],c = "g")
+ax2.legend(["positive","negative"]);
+ax2.set_title("y_pred");
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2022/png/308996/1642315658860-4b311a1c-948f-47ea-9c83-7cf94aa706e0.png" alt="img" style="zoom:67%;" />
+
+### 通过优化器实现 L2 正则化
+
+如果仅仅需要使用L2正则化，那么也可以利用优化器的weight_decay参数来实现。
+
+weight_decay参数可以设置参数在训练过程中的衰减，这和L2正则化的作用效果等价。
+
+```python
+before L2 regularization:
+
+gradient descent: w = w - lr * dloss_dw 
+
+after L2 regularization:
+
+gradient descent: w = w - lr * (dloss_dw+beta*w) = (1-lr*beta)*w - lr*dloss_dw
+
+so （1-lr*beta）is the weight decay ratio.
+```
+
+Pytorch的优化器支持一种称之为**Per-parameter options**的操作，就是**对每一个参数进行特定的学习率，权重衰减率指定**，以满足更为细致的要求。
+
+```python
+weight_params = [param for name, param in model.named_parameters() if "bias" not in name]
+bias_params = [param for name, param in model.named_parameters() if "bias" in name]
+
+optimizer = torch.optim.SGD([{'params': weight_params, 'weight_decay':1e-5},
+                             {'params': bias_params, 'weight_decay':0}],
+                            lr=1e-2, momentum=0.9)
+```
+
+------
+
+## TensorBoard 可视化
+
+TensorBoard正是这样一个神奇的炼丹可视化辅助工具。它原是TensorFlow的小弟，但它也能够很好地和Pytorch进行配合。甚至在Pytorch中使用TensorBoard比TensorFlow中使用TensorBoard还要来的更加简单和自然。
+
+Pytorch中利用TensorBoard可视化的大概过程如下：
+
+1. 首先在Pytorch中指定一个目录创建一个`torch.utils.tensorboard.SummaryWriter`日志写入器。
+2. 然后根据需要可视化的信息，利用日志写入器将相应信息日志写入我们指定的目录。
+
+1. 最后就可以传入日志目录作为参数启动TensorBoard，然后就可以在TensorBoard中愉快地看片了。
+
+我们主要介绍Pytorch中利用TensorBoard进行如下方面信息的可视化的方法。
+
+- 可视化模型结构： writer.add_graph
+- 可视化指标变化： writer.add_scalar
+
+- 可视化参数分布： writer.add_histogram
+- 可视化原始图像： writer.add_image 或 writer.add_images
+
+- 可视化人工绘图： writer.add_figure
+
+
+
+### 可视化模型结构
+
+```python
+import torch 
+from torch import nn
+from torch.utils.tensorboard import SummaryWriter
+from torchkeras import Model,summary
+class Net(nn.Module):
+    
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(in_channels=3,out_channels=32,kernel_size = 3)
+        self.pool = nn.MaxPool2d(kernel_size = 2,stride = 2)
+        self.conv2 = nn.Conv2d(in_channels=32,out_channels=64,kernel_size = 5)
+        self.dropout = nn.Dropout2d(p = 0.1)
+        self.adaptive_pool = nn.AdaptiveMaxPool2d((1,1))
+        self.flatten = nn.Flatten()
+        self.linear1 = nn.Linear(64,32)
+        self.relu = nn.ReLU()
+        self.linear2 = nn.Linear(32,1)
+        self.sigmoid = nn.Sigmoid()
+        
+    def forward(self,x):
+        x = self.conv1(x)
+        x = self.pool(x)
+        x = self.conv2(x)
+        x = self.pool(x)
+        x = self.dropout(x)
+        x = self.adaptive_pool(x)
+        x = self.flatten(x)
+        x = self.linear1(x)
+        x = self.relu(x)
+        x = self.linear2(x)
+        y = self.sigmoid(x)
+        return y
+        
+net = Net()
+print(net)
+#Net(
+  (conv1): Conv2d(3, 32, kernel_size=(3, 3), stride=(1, 1))
+  (pool): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (conv2): Conv2d(32, 64, kernel_size=(5, 5), stride=(1, 1))
+  (dropout): Dropout2d(p=0.1, inplace=False)
+  (adaptive_pool): AdaptiveMaxPool2d(output_size=(1, 1))
+  (flatten): Flatten()
+  (linear1): Linear(in_features=64, out_features=32, bias=True)
+  (relu): ReLU()
+  (linear2): Linear(in_features=32, out_features=1, bias=True)
+  (sigmoid): Sigmoid()
+)
+summary(net,input_shape= (3,32,32))
+###
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1           [-1, 32, 30, 30]             896
+         MaxPool2d-2           [-1, 32, 15, 15]               0
+            Conv2d-3           [-1, 64, 11, 11]          51,264
+         MaxPool2d-4             [-1, 64, 5, 5]               0
+         Dropout2d-5             [-1, 64, 5, 5]               0
+ AdaptiveMaxPool2d-6             [-1, 64, 1, 1]               0
+           Flatten-7                   [-1, 64]               0
+            Linear-8                   [-1, 32]           2,080
+              ReLU-9                   [-1, 32]               0
+           Linear-10                    [-1, 1]              33
+          Sigmoid-11                    [-1, 1]               0
+================================================================
+Total params: 54,273
+Trainable params: 54,273
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.011719
+Forward/backward pass size (MB): 0.359634
+Params size (MB): 0.207035
+Estimated Total Size (MB): 0.578388
+----------------------------------------------------------------
+
+writer = SummaryWriter('./data/tensorboard')
+writer.add_graph(net,input_to_model = torch.rand(1,3,32,32))
+writer.close()
+
+%load_ext tensorboard
+#%tensorboard --logdir ./data/tensorboard
+
+from tensorboard import notebook
+#查看启动的tensorboard程序
+notebook.list() 
+
+#启动tensorboard程序
+notebook.start("--logdir ./data/tensorboard")
+#等价于在命令行中执行 tensorboard --logdir ./data/tensorboard
+#可以在浏览器中打开 http://localhost:6006/ 查看
+
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2022/png/308996/1642316074068-30632a8d-7257-488c-a669-343536d2dc75.png" alt="img" style="zoom:67%;" />
+
+### 可视化指标变化
+
+有时候在训练过程中，如果能够实时动态地查看loss和各种metric的变化曲线，那么无疑可以帮助我们更加直观地了解模型的训练情况。
+
+注意，`writer.add_scalar`仅能对标量的值的变化进行可视化。因此**它一般用于对loss和metric的变化进行可视化分析**。
+
+```python
+import numpy as np 
+import torch 
+from torch.utils.tensorboard import SummaryWriter
+
+# f(x) = a*x**2 + b*x + c的最小值
+x = torch.tensor(0.0,requires_grad = True) # x需要被求导
+a = torch.tensor(1.0)
+b = torch.tensor(-2.0)
+c = torch.tensor(1.0)
+
+optimizer = torch.optim.SGD(params=[x],lr = 0.01)
+
+
+def f(x):
+    result = a*torch.pow(x,2) + b*x + c 
+    return(result)
+
+writer = SummaryWriter('./data/tensorboard')
+for i in range(500):
+    optimizer.zero_grad()
+    y = f(x)
+    y.backward()
+    optimizer.step()
+    writer.add_scalar("x",x.item(),i) #日志中记录x在第step i 的值
+    writer.add_scalar("y",y.item(),i) #日志中记录y在第step i 的值
+
+writer.close()
+    
+print("y=",f(x).data,";","x=",x.data)
+y= tensor(0.) ; x= tensor(1.0000)
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2022/png/308996/1642316143969-47f1db66-fe37-4898-a117-386c82934243.png" alt="img" style="zoom:67%;" />
+
+### 可视化参数分布
+
+如果需要对模型的参数(一般非标量)在训练过程中的变化进行可视化，可以使用`writer.add_histogram`。它能够观测张量值分布的直方图随训练步骤的变化趋势。
+
+```python
+import numpy as np 
+import torch 
+from torch.utils.tensorboard import SummaryWriter
+
+
+# 创建正态分布的张量模拟参数矩阵
+def norm(mean,std):
+    t = std*torch.randn((100,20))+mean
+    return t
+
+writer = SummaryWriter('./data/tensorboard')
+for step,mean in enumerate(range(-10,10,1)):
+    w = norm(mean,1)
+    writer.add_histogram("w",w, step)
+    writer.flush()
+writer.close()
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2022/png/308996/1642316206371-bbba748e-4378-4d76-a34f-a34e90593c27.png" alt="img" style="zoom:67%;" />
+
+### 可视化原始图像
+
+如果我们做图像相关的任务，也可以将原始的图片在tensorboard中进行可视化展示。
+
+- 如果只写入一张图片信息，可以使用`writer.add_image`。
+- 如果要写入多张图片信息，可以使用`writer.add_images`。
+
+- 也可以用 `torchvision.utils.make_grid`将多张图片拼成一张图片，然后用`writer.add_image`写入。
+
+注意，传入的是代表图片信息的Pytorch中的张量数据。
+
+```python
+import torch
+import torchvision
+from torch import nn
+from torch.utils.data import Dataset,DataLoader
+from torchvision import transforms,datasets 
+
+
+transform_train = transforms.Compose(
+    [transforms.ToTensor()])
+transform_valid = transforms.Compose(
+    [transforms.ToTensor()])
+ds_train = datasets.ImageFolder("./data/cifar2/train/",
+            transform = transform_train,target_transform= lambda t:torch.tensor([t]).float())
+ds_valid = datasets.ImageFolder("./data/cifar2/test/",
+            transform = transform_train,target_transform= lambda t:torch.tensor([t]).float())
+
+print(ds_train.class_to_idx)
+
+dl_train = DataLoader(ds_train,batch_size = 50,shuffle = True,num_workers=3)
+dl_valid = DataLoader(ds_valid,batch_size = 50,shuffle = True,num_workers=3)
+
+dl_train_iter = iter(dl_train)
+images, labels = dl_train_iter.next()
+
+# 仅查看一张图片
+writer = SummaryWriter('./data/tensorboard')
+writer.add_image('images[0]', images[0])
+writer.close()
+
+# 将多张图片拼接成一张图片，中间用黑色网格分割
+writer = SummaryWriter('./data/tensorboard')
+# create grid of images
+img_grid = torchvision.utils.make_grid(images)
+writer.add_image('image_grid', img_grid)
+writer.close()
+
+# 将多张图片直接写入
+writer = SummaryWriter('./data/tensorboard')
+writer.add_images("images",images,global_step = 0)
+writer.close()
+
+{'0_airplane': 0, '1_automobile': 1}
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2022/png/308996/1642316320909-e2cd0fe7-b0cc-408a-8c59-20cba0acc6ac.png" alt="img" style="zoom:67%;" />
+
+
+
+### 可视化人工绘图
+
+如果我们将matplotlib绘图的结果再 tensorboard中展示，可以使用 `add_figure`.
+
+注意，和`writer.add_image`不同的是，`writer.add_figure`需要传入matplotlib的figure对象。
+
+```python
+import torch
+import torchvision
+from torch import nn
+from torch.utils.data import Dataset,DataLoader
+from torchvision import transforms,datasets 
+
+
+transform_train = transforms.Compose(
+    [transforms.ToTensor()])
+transform_valid = transforms.Compose(
+    [transforms.ToTensor()])
+
+ds_train = datasets.ImageFolder("./data/cifar2/train/",
+            transform = transform_train,target_transform= lambda t:torch.tensor([t]).float())
+ds_valid = datasets.ImageFolder("./data/cifar2/test/",
+            transform = transform_train,target_transform= lambda t:torch.tensor([t]).float())
+
+print(ds_train.class_to_idx)
+{'0_airplane': 0, '1_automobile': 1}
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+from matplotlib import pyplot as plt 
+
+figure = plt.figure(figsize=(8,8)) 
+for i in range(9):
+    img,label = ds_train[i]
+    img = img.permute(1,2,0)
+    ax=plt.subplot(3,3,i+1)
+    ax.imshow(img.numpy())
+    ax.set_title("label = %d"%label.item())
+    ax.set_xticks([])
+    ax.set_yticks([]) 
+plt.show()
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2022/png/308996/1642316384776-7acaa9e3-7187-4a91-9452-04c8a0d74147.png" alt="img" style="zoom:67%;" />
+
+```python
+writer = SummaryWriter('./data/tensorboard')
+writer.add_figure('figure',figure,global_step=0)
+writer.close()                         
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2022/png/308996/1642316406253-32138f60-d677-4b0f-9b8a-8a5849b35ac4.png" alt="img" style="zoom:67%;" />
+
 
 
 
@@ -2924,6 +3568,7 @@ while batch is not None:
          - PyTorch的文档：[https://pytorch.org/docs/stable/notes/amp_examples.html>](https://pytorch.org/docs/stable/notes/amp_examples.html%3E)
 
  
+
 
 ### 代码层面
 
